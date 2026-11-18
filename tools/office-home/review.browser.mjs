@@ -80,11 +80,12 @@ try{
   const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,gridHeight:document.querySelector('#project-grid').getBoundingClientRect().height,cards:[...document.querySelectorAll('.px-card')].map(c=>({title:c.querySelector('h3').textContent,height:c.getBoundingClientRect().height})),targets:[...document.querySelectorAll('#projects button,#projects summary,.px-open,.px-private-course')].filter(e=>e.getBoundingClientRect().width).map(e=>({label:e.textContent.trim().slice(0,45),width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}))}));
   assert(!layout.overflow,'No horizontal overflow: '+profile);assert(layout.targets.every(t=>t.width>=44&&t.height>=44),'44px controls: '+profile);
   if(profile==='desktop'){assert(layout.gridHeight<beforeHeight*.8,'Substantially shorter project grid');}
+  await page.locator('#office-port > img').evaluate(img=>img.decode());
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-home.png')});await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-projects.png')});
   await reviewFooter(page, profile);
   const toolsLink=page.locator('.office-actions').getByRole('link',{name:'Tools & Learning',exact:true});
   assert.equal(await toolsLink.getAttribute('href'),'#projects');
-  await page.getByRole('link',{name:'Enter the Studio'}).click();
+  await page.getByRole('link',{name:'Visit the studio'}).click();
   await page.waitForURL('**/animation-studio/');
   assert.deepEqual(await page.locator('.studio-project h3').allTextContents(),['Chisum','Johansson World','Sakura Shōten']);
   assert.deepEqual(await page.locator('.studio-actions a').evaluateAll(links=>links.map(link=>link.getAttribute('href'))),['/ferry/','/johansson-world/','/johansson-town/','/johansson-world/#downloads','/johansson-world/sakura/play/','/johansson-world/sakura/']);
@@ -137,7 +138,7 @@ try{
   for(const section of ['/blog/','/hotels/']){
     const journal = section==='/blog/';
     const nav = journal ? 'Primary navigation' : 'Hotel journal';
-    await page.getByRole('navigation',{name:nav}).getByRole('link',{name:journal?'Blog':'Hotel finder',exact:true}).click();
+    await page.getByRole('navigation',{name:nav}).getByRole('link',{name:journal?'Field Notes':'Hotel finder',exact:true}).click();
     await page.waitForURL('**'+section);
     assert.equal(await page.locator('.site-shortcuts [aria-current]').getAttribute('href'),'/blog/');
     assert.equal(await page.locator('.site-shortcuts a').count(),3);
@@ -155,6 +156,7 @@ try{
       assert.equal(await page.locator('.blog-feed-topic').first().textContent(),'Hotel review');
       await filters.getByRole('button',{name:'Hotel reviews'}).click();
       assert.equal(await page.locator('.blog-parking').count(),5);
+      assert.equal(await page.locator('.blog-logistics').count(),5);
       assert((await page.locator('.blog-feed-topic').allTextContents()).every(topic=>topic==='Hotel review'));
       await filters.getByRole('button',{name:'Other articles'}).focus();
       await page.keyboard.press('Enter');
@@ -189,8 +191,21 @@ try{
  const blockedPage=await pageFor(blocked,current.url);await blockedPage.goto(current.url);await blockedPage.locator('.office-appearance-toggle').click();assert.equal(await blockedPage.locator('html').getAttribute('data-office-mode'),'light','Toggle works when storage is unavailable');await blocked.close();
  const plain=await browser.newContext({javaScriptEnabled:false});
  const plainPage=await pageFor(plain,current.url);
+ await plainPage.goto(current.url+'/');
+ const homeOrder=await plainPage.locator('main > section').evaluateAll(sections=>sections.slice(0,4).map(s=>s.id||s.getAttribute('aria-labelledby')));
+ assert.deepEqual(homeOrder,['home','about','projects','studio-home-heading']);
+ assert(await plainPage.getByRole('navigation',{name:'Primary navigation'}).getByRole('link',{name:'Field Notes'}).isVisible());
+ assert(await plainPage.getByText('I commission and calibrate precision materials-testing systems',{exact:false}).isVisible());
+ assert.equal(await plainPage.locator('.office-specs dt').count(),4);
+ assert.equal(await plainPage.locator('#project-grid .px-card').count(),4);
+ assert.equal(await plainPage.locator('#project-grid a[href="/camera/"]').count(),1);
+ assert.equal(await plainPage.locator('#project-grid a[href="/elteknik/"]').count(),1);
+ assert(await plainPage.getByRole('navigation',{name:'Professional contact'}).getByRole('link',{name:'Contact on LinkedIn'}).isVisible());
+ assert.equal(await plainPage.locator('link[rel="stylesheet"]').count(),1);
+ assert.equal(await plainPage.locator('#harbour-diorama a[href="/camera/"], #harbour-diorama a[href="/elteknik/"]').count(),0);
  await plainPage.goto(current.url+'/blog/');
  assert.equal(await plainPage.locator('.blog-parking').count(),5,'Parking links remain in the static feed');
+ assert.equal(await plainPage.locator('.blog-logistics').count(),5,'Vehicle and receipt metadata remain in the static feed');
  assert(await plainPage.getByRole('heading',{name:'The Torn Poster'}).isVisible());
  assert.equal(await plainPage.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Hotel finder'}).getAttribute('href'),'/hotels/');
  await plainPage.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Hotel finder'}).click();

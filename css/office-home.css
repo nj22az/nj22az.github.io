@@ -45,7 +45,7 @@ body.office-home .section-divider{max-width:1152px;margin:0 auto;border:0;border
 body.office-home .section-alt{background:var(--surface-card)}
 body.office-home .section-header{text-align:left;max-width:760px;margin:0 0 16px}
 body.office-home .section-header h2,body.office-home .about-content h2{font:800 clamp(28px,3vw,38px)/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink)}
-body.office-home .section-header p{font:400 16px/1.65 var(--font-body);color:var(--ink-light);margin-top:8px}
+body.office-home .section-header p{font:400 16px/1.65 var(--font-body);color:var(--ink-light);margin:8px 0 0}
 body.office-home .section-decor,body.office-home .about-blobs{display:none}
 body.office-home #blog,body.office-home #about,body.office-home #locations{padding-block:var(--family-section-spacing, 32px)}
 body.office-home .blog-feed-item{padding-block:var(--family-item-spacing, 20px)}
@@ -55,6 +55,16 @@ body.office-home .blog-feed-links a{color:var(--accent)}
 body.office-home .blog-feed-meta{font-size:13px}
 body.office-home .office-heading{text-wrap:balance}
 body.office-home .about-bio{max-width:65ch;font-size:17px;line-height:1.7}
+.office-specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0 0}
+.office-specs div{padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-card)}
+.office-specs dt{font-weight:700;line-height:1.3}
+.office-specs dd{margin:5px 0 0;color:var(--ink-light);font-size:.875rem;line-height:1.45}
+@media(max-width:760px){.office-specs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.office-contact{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px}
+.office-home .office-footer-brand{display:inline-block}
+.office-contact a{display:inline-flex;align-items:center;min-width:44px;min-height:44px;font-weight:650}
+body.office-home .location-scope{margin-top:8px;color:var(--ink-light);font-size:.875rem}
+.office-home .location-link{display:inline-flex;align-items:center;min-height:44px;color:var(--accent);font-size:.875rem}
 body.office-home .locations-grid{gap:24px}
 body.office-home .site-nav{background:var(--surface)}
 

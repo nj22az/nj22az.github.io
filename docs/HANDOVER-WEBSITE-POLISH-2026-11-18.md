@@ -52,3 +52,11 @@ The browser review checks all six screen profiles, the review and article filter
 The Blog and Hotel finder share the same navigation, masthead, Minato illustration and content width. The finder starts under that masthead with its own title, register count and tools. The tabs are present in the published HTML. The hotel page generator was updated and the register rebuilt from its existing 211 records.
 
 The English journal articles use the shared Office header and footer, the journal navigation and a reading column. The compact Office wordmark keeps its surname with the given name on narrow screens. Browser checks measure the journal navigation and masthead on six profiles, follow a paid-parking record to its editorial article and verify the static tabs with JavaScript disabled. The register, stamp and catalogue checks cover the source templates. Physical Safari remains unverified. The production baseline is `14a99be2f15a15189685166140ca16ec3c79f7ac`.
+
+## Engineering portfolio
+
+The homepage leads with field service and commissioning, followed by About, a four-part engineering capability summary and four flagship Tools & Learning cards. The Studio follows as a showcase for WebGL, interface design and custom toolmaking. The harbour overlay is reserved for the scene and camera controls. Pocket Camera and the textbook remain in the project grid.
+
+The homepage HTML includes its navigation, footer, biography, project cards, Field Notes preview and locations. JavaScript enhances that markup with filters, the maintenance preview, the menu and the existing harbour features. The homepage loads one generated CSS bundle while retaining the source modules. After changing a source module, run `python3 tools/office-home/build-css.py`. The homepage workflow checks the bundle for freshness.
+
+Field Notes uses the published hotel records to describe parking, EV charging, receipts, registration and access. Badge wording stays tied to each report. The locations describe Nordic field-service work and the author's ties to Quảng Nam. The footer provides LinkedIn and GitHub actions. The production baseline is `e9936d0f1d249cd244afbb441542c02428f0087e`.

@@ -184,30 +184,32 @@
     var family = document.body.classList.contains("site-family");
     var compactOffice = family || isHome || document.body.classList.contains("world-pages");
     var journalArticle = location.pathname.startsWith("/blog/");
-    var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Blog", "Blog", "article"] };
-    var navLinks = CONFIG.navigation.filter(function (item) {
-      return family ? compactLinks[item.id] : item.id !== "home" && !(journalArticle && item.id === "hotels");
-    }).map(function (item) {
-      var link = navLink(item, isHome);
-      if (family) {
-        var labels = compactLinks[item.id];
-        return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' + currentNavLocation(link.href) + '<img src="/assets/vendor/site-icons/' +
-          labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>';
-      }
-      return '<a class="nav-link" href="' + link.href + '"' + link.attrs + (journalArticle ? currentNavLocation(link.href) : '') + '>' + item.label + '</a>';
-    }).join("");
+    if (!nav.hasAttribute("data-static-nav")) {
+      var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Field Notes", "Field Notes", "article"] };
+      var navLinks = CONFIG.navigation.filter(function (item) {
+        return family ? compactLinks[item.id] : item.id !== "home" && !(journalArticle && item.id === "hotels");
+      }).map(function (item) {
+        var link = navLink(item, isHome);
+        if (family) {
+          var labels = compactLinks[item.id];
+          return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' + currentNavLocation(link.href) + '<img src="/assets/vendor/site-icons/' +
+            labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>';
+        }
+        return '<a class="nav-link" href="' + link.href + '"' + link.attrs + (journalArticle ? currentNavLocation(link.href) : '') + '>' + item.label + '</a>';
+      }).join("");
 
-    var brand = family ? '<span class="site-wordmark">The Office of<strong>Nils Johansson</strong></span>' : CONFIG.navLogo(34);
-    nav.innerHTML =
-      '<div class="nav-inner">' +
-        '<a href="/" class="nav-brand logo-seal">' + brand + '</a>' +
-        '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '">' + navLinks + '</div>' +
-        '<div class="nav-actions">' +
-          '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
-            (compactOffice ? '<span>More</span>' : icon("menu")) +
-          '</button>' +
-        '</div>' +
-      '</div>';
+      var brand = family ? '<span class="site-wordmark">The Office of<strong>Nils Johansson</strong></span>' : CONFIG.navLogo(34);
+      nav.innerHTML =
+        '<div class="nav-inner">' +
+          '<a href="/" class="nav-brand logo-seal">' + brand + '</a>' +
+          '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '">' + navLinks + '</div>' +
+          '<div class="nav-actions">' +
+            '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
+              (compactOffice ? '<span>More</span>' : icon("menu")) +
+            '</button>' +
+          '</div>' +
+        '</div>';
+    }
 
     // Full-screen overlay menu
     var overlay = document.createElement("div");
@@ -345,6 +347,7 @@
       });
     });
 
+    hamburger.hidden = false;
     if (!studioPage) updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) || THEMES[0]);
 
     window.addEventListener("scroll", function () {
@@ -356,7 +359,7 @@
 
   function buildFooter() {
     var footer = $("#site-footer");
-    if (!footer) return;
+    if (!footer || footer.hasAttribute("data-static-footer")) return;
 
     if (document.body.classList.contains("site-family")) {
       var groups = [
@@ -369,7 +372,7 @@
         { title: "Explore", links: [
           ["Tools &amp; Learning", "/#projects"],
           ["Animation Studio", "/animation-studio/"],
-          ["Blog", "/blog/"]
+          ["Field Notes", "/blog/"]
         ] },
         { title: "Resources", links: [
           ["Hotel finder", "/hotels/"],

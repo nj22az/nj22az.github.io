@@ -2,7 +2,7 @@ name: Office homepage design review
 on:
   push:
     branches: [development, main]
-    paths: ['index.html', 'animation-studio/**', 'blog/index.html', 'hotels/index.html', 'css/site-family.css', 'css/project-explorer.css', 'css/office-home.css', 'assets/js/project-explorer.js', 'assets/js/office-calendar.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
+    paths: ['index.html', 'animation-studio/**', 'blog/index.html', 'hotels/index.html', 'styles.css', 'css/**', 'assets/js/blog-*.js', 'assets/js/project-explorer.js', 'assets/js/office-calendar.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
 permissions:
   contents: read
 jobs:
@@ -37,6 +37,7 @@ jobs:
         run: |
           node --check config.js
           node --check assets/js/project-explorer.js
+          python3 tools/office-home/build-css.py --check
       - name: Browser tools
         run: |
           npm install --prefix /tmp/office-runtime --no-save --no-package-lock playwright@1.61.0

@@ -16,29 +16,28 @@
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
   <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="/assets/js/office-appearance.js?v=20261102black"></script>
   <script src="/theme-bootstrap.js?v=random-2"></script>
-  <link rel="stylesheet" href="/styles.css?v=linux-port-20261017">
-  <link rel="stylesheet" href="/css/office-mascots.css?v=2">
-  <link rel="stylesheet" href="/css/project-explorer.css?v=office-black-20261102">
-  <link rel="stylesheet" href="/css/office-port.css?v=diorama-20261101a">
-  <link rel="stylesheet" href="/css/office-home.css?v=office-density-1">
-  <link rel="stylesheet" href="/css/office-calendar.css?v=site-polish-1">
+  <link rel="stylesheet" href="/css/office-portfolio.bundle.css?v=1">
   <script src="/assets/js/office-port.js?v=site-polish-1" defer></script>
   <script src="/assets/js/office-diorama.js?v=20261101a" defer></script>
-  <link rel="stylesheet" href="/css/office-blog.css?v=1">
-  <link rel="stylesheet" href="/animation-studio/studio.css?v=office-density-1">
-  <link rel="stylesheet" href="/css/site-family.css?v=journal-shell-1">
 
 </head>
 <body class="office-home site-family">
 
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <nav id="site-nav" class="site-nav"></nav>
+  <nav id="site-nav" class="site-nav" aria-label="Primary navigation" data-static-nav>
+    <div class="nav-inner">
+      <a href="/" class="nav-brand logo-seal"><span class="site-wordmark">The Office of<strong>Nils Johansson</strong></span></a>
+      <div class="nav-links site-shortcuts">
+        <a href="#projects" aria-label="Tools &amp; Learning"><img src="/assets/vendor/site-icons/tools.svg" alt="" width="18" height="18"><span>Tools</span></a>
+        <a href="/animation-studio/" aria-label="Animation Studio"><img src="/assets/vendor/site-icons/studio.svg" alt="" width="18" height="18"><span>Studio</span></a>
+        <a href="/blog/"><img src="/assets/vendor/site-icons/article.svg" alt="" width="18" height="18"><span>Field Notes</span></a>
+      </div>
+      <div class="nav-actions"><button id="nav-hamburger" class="nav-hamburger office-more-toggle" aria-label="More options" aria-expanded="false" aria-controls="menu-overlay" hidden><span>More</span></button></div>
+    </div>
+  </nav>
 
   <main id="main-content">
 
@@ -47,15 +46,15 @@
       <div class="office-opening">
         <div class="office-introduction">
           <p class="office-eyebrow">Field service engineer · Marine systems</p>
-          <h1 class="office-heading" id="hero-title">Engineering in the field.<br>Ideas brought to life.</h1>
-          <p class="office-summary" id="hero-description">Practical engineering, useful tools and a small world to explore.</p>
+          <h1 class="office-heading" id="hero-title">Field service for industrial and marine systems</h1>
+          <p class="office-summary" id="hero-description">Commissioning, calibration and fault-finding for precision test equipment and industrial controls, backed by experience in marine engine rooms.</p>
           <div class="office-actions">
             <a href="#projects" class="site-button site-button-primary">Tools &amp; Learning</a>
-            <a href="/animation-studio/" class="site-button">Enter the Studio <span aria-hidden="true">&rarr;</span></a>
+            <a href="#about" class="site-button">About my work</a>
           </div>
         </div>
       <figure class="office-port" id="office-port" aria-label="An arrival at Minato port in Johansson World">
-        <img src="/assets/office-port/quay-opening.webp" alt="The Minato Maru moored beside the harbour buildings and quay in Johansson World" width="960" height="540" loading="eager" fetchpriority="high" decoding="async">
+        <img src="/assets/office-port/quay-opening.webp" alt="The Minato Maru moored beside the harbour buildings and quay in Johansson World" width="960" height="540" loading="eager" fetchpriority="high">
         <div class="office-port-stage" id="office-port-stage" data-port-stage></div>
         <button class="harbour-open" type="button" data-diorama-open aria-expanded="false" aria-controls="harbour-diorama" hidden>Explore harbour</button>
         <div class="harbour-diorama" id="harbour-diorama" data-diorama hidden>
@@ -75,7 +74,6 @@
               <button type="button" data-harbour-action="in" aria-label="Zoom in">+</button>
               <button type="button" data-harbour-action="out" aria-label="Zoom out">−</button>
               <button type="button" data-harbour-action="reset">Reset</button>
-              <a href="/camera/">Pocket Camera</a><a href="/elteknik/">Book in progress</a>
             </div>
           </div>
         </div>
@@ -84,18 +82,22 @@
       </div>
     </section>
 
-    <section class="studio-home-link" aria-labelledby="studio-home-heading">
+    <section class="section" id="about" aria-labelledby="about-heading">
       <div class="container">
-        <div class="studio-home-content">
-          <img src="/animation-studio/johansson-logo.svg" width="120" height="120" alt="">
-          <div>
-            <h2 id="studio-home-heading">Johansson Animation Studios</h2>
-            <p>Chisum, Johansson World and Sakura Shōten.</p>
-          </div>
-          <a href="/animation-studio/">Visit the studio <span aria-hidden="true">&rarr;</span></a>
+        <div class="section-header">
+          <h2 id="about-heading">Engineering with a wider field of view</h2>
+          <p>I commission and calibrate precision materials-testing systems, including servo-hydraulic and electromechanical equipment. My background includes marine engine-room operations and industrial commissioning. I also teach marine electrical engineering through practical exercises and browser-based simulators.</p>
         </div>
+        <dl class="office-specs">
+          <div><dt>Servo-hydraulic systems</dt><dd>Materials testing, calibration and fault-finding</dd></div>
+          <div><dt>Marine engineering</dt><dd>Engine-room operations and shipboard systems</dd></div>
+          <div><dt>Technical instruction</dt><dd>Elteknik och ellära, with practical measurement exercises</dd></div>
+          <div><dt>CAD and toolmaking</dt><dd>Parametric models and browser-based engineering tools</dd></div>
+        </dl>
       </div>
     </section>
+
+    <hr class="section-divider">
 
     <!-- Project explorer — tools and practical learning -->
     <section class="section project-explorer" id="projects" aria-labelledby="project-heading">
@@ -104,152 +106,120 @@
           <div><div class="section-subtitle">From the workshop</div><h2 id="project-heading">Tools &amp; Learning</h2></div>
           <p>Browser tools, electrical engineering lessons and a textbook in progress.</p>
         </div>
-        <div class="px-toolbar"><div class="px-filters" role="group" aria-label="Filter projects">
+        <div class="px-toolbar" hidden><div class="px-filters" role="group" aria-label="Filter projects">
           <button type="button" data-project-filter="all" aria-pressed="true">All projects <span></span></button>
           <button type="button" data-project-filter="create" aria-pressed="false">Tools <span></span><small>Camera &amp; maintenance</small></button>
           <button type="button" data-project-filter="learn" aria-pressed="false">Learn <span></span><small>Course &amp; book</small></button>
         </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true"></p></div>
-        <div id="project-grid" class="px-grid" data-filter="all"></div>
-        <noscript><div class="px-fallback"><ul><li><a href="/camera/">Pocket Camera</a></li><li><a href="/maintenance-demo/">Maintenance Desk</a> · <a href="/stepbuddy/">Open StepWise</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook in progress, with a free sample</a></li></ul></div></noscript>
-
-        <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
+        <div id="project-grid" class="px-grid" data-filter="all">
+          <article class="px-card px-card-maintenance" data-project-category="create" aria-labelledby="project-maintenance"><div class="px-preview px-maintenance"><div class="px-mini-window"><div class="px-mini-title"><span class="px-mini-mark">M</span><b>M/V Chisum</b><span class="px-mini-label">PREVIEW</span></div><div class="px-mini-metrics"><div><strong>03</strong><span>Jobs</span></div><div><strong id="px-preview-due">02</strong><span>Checks due</span></div><div><strong>04</strong><span>Drawings</span></div></div><div class="px-mini-task"><span><b>Ramp power pack</b><small>Weekly round</small></span><button type="button" id="px-complete-preview" hidden aria-label="Try the preview: mark the power pack’s weekly round complete">Mark complete</button></div><p class="px-preview-note" id="px-preview-feedback" role="status" aria-live="polite">Try one check here. This preview does not save a record.</p></div></div><div class="px-copy"><div class="px-card-meta"><span>Tools</span><span>Browser app</span></div><div class="px-mascot-title"><div><p class="px-eyebrow">FROM THE ENGINEER’S WORKBENCH</p><h3 id="project-maintenance">Maintenance Desk</h3></div><img class="px-mascot" src="/assets/mascots/johansson-inspect.webp" width="80" height="112" alt="" loading="lazy" decoding="async"></div><p class="px-summary">Turn equipment care into a clear programme: scheduled tasks, inspection checklists and follow-up for everything aboard the M/V Chisum, with her drawings and instructions. StepWise, for planning test points, is one of its tools.</p><div class="px-facts"><span>Maintenance programme</span><span>English</span></div><details class="px-details"><summary>What can I do here?<span aria-hidden="true">＋</span></summary><div class="px-detail-content"><ul><li>Calendar and operating-hour maintenance schedules</li><li>Risk assessments, checklists and corrective actions</li><li>StepWise, for turning a measurement range into test points</li></ul><p><b>Start here.</b> Open the register, choose a department (deck, engine or galley), open an item and perform one of its jobs. What you record stays in your browser. For test points, open StepWise.</p></div></details><div class="px-card-actions"><a class="px-open" href="/maintenance-demo/">Open Maintenance Desk<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a class="px-secondary" href="/stepbuddy/">Open StepWise ↗</a></div></div></article>
+          <article class="px-card px-card-course" data-project-category="learn" aria-labelledby="project-course"><figure class="px-preview px-course"><div class="px-lesson-tag">SJÖSKOLAN / ELTEKNIK</div><svg viewBox="0 0 440 165" role="img" aria-label="Simple DC circuit illustration with a supply, resistor and current meter"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M62 73V34h110m94 0h108v96H62V95M48 73h28M54 85h16M48 95h28M172 34l8-10 12 20 12-20 12 20 12-20 12 20 12-20 8 10h6"/><circle cx="221" cy="130" r="22" fill="#e9f2ec"/><path d="M212 137l9-18 9 18m-14-6h10"/></g><text x="58" y="56" font-size="15" fill="currentColor">+</text><text x="207" y="75" font-size="16" fill="currentColor">R</text></svg><div class="px-lesson-topics"><span>01 · Understand</span><span>02 · Measure</span><span>03 · Apply</span></div><figcaption>Learn the principle. Practise the measurement.</figcaption></figure><div class="px-copy"><div class="px-card-meta"><span>Learn</span><span>Learning resource</span></div><div class="px-mascot-title"><div><p class="px-eyebrow">LEARNING THROUGH DOING</p><h3 id="project-course">Sjöskolan · Electrical engineering</h3></div><img class="px-mascot" src="/assets/mascots/tetsuo-teach.webp" width="80" height="112" alt="" loading="lazy" decoding="async"></div><p class="px-summary">A practical course space for electrical work on board. Explore the lessons, practise measurements and work through guided exercises.</p><div class="px-facts"><span>Course &amp; simulators</span><span>Swedish</span></div><details class="px-details"><summary>What can I do here?<span aria-hidden="true">＋</span></summary><div class="px-detail-content"><ul><li>Lessons connecting electrical theory to marine examples</li><li>Interactive simulators and measurement exercises</li><li>Guided laboratory material and formula support</li></ul><p><b>Start here.</b> Open the multimeter simulator and work through a measurement exercise. Course material and instructions are in Swedish.</p></div></details><div class="px-card-actions"><a class="px-open" href="/sjoskolan/">Browse the course<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a class="px-secondary" href="/sjoskolan/multimetersimulator/">Try the multimeter ↗</a></div><a class="px-private-course" href="https://sjoskolan-course-review.nils-johansson.chatgpt.site" target="_blank" rel="noopener noreferrer nofollow"><img src="/assets/private-course-link/johansson-whisper.webp" width="32" height="48" alt="" loading="lazy"><span>Private classroom<small>Sign-in required · opens in a new tab</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div></article>
+          <article class="px-card px-card-book" data-project-category="learn" aria-labelledby="project-book"><figure class="px-preview px-book"><div class="px-book-copy"><span>FOR SHIP & SHORE</span><strong>A textbook<br>in progress.<br>Free to sample.</strong></div><img src="/elteknik/files/omslag.jpg?v=20261112" width="640" height="900" loading="lazy" decoding="async" alt="Cover of Elteknik och ellära för sjöfart och industri by Nils Johansson"><figcaption>Swedish textbook · preview, still being written</figcaption></figure><div class="px-copy"><div class="px-card-meta"><span>Learn</span><span>In progress</span></div><div class="px-mascot-title"><div><p class="px-eyebrow">THE BOOK BEHIND THE PRACTICE</p><h3 id="project-book">Elteknik och ellära</h3></div><img class="px-mascot" src="/assets/mascots/tetsuo-think.webp" width="80" height="112" alt="" loading="lazy" decoding="async"></div><p class="px-summary">Electrical engineering for marine and industrial work, in a Swedish textbook that is still being written.</p><div class="px-facts"><span>Textbook in progress</span><span>Swedish</span></div><details class="px-details"><summary>What can I do here?<span aria-hidden="true">＋</span></summary><div class="px-detail-content"><ul><li>A working plan from direct current through fault-finding</li><li>A free sample of chapter 1, with examples and exercises</li><li>Still being written, and not for sale</li></ul><p><b>Start here.</b> Read the free sample chapter. It is a preview of the book in progress, not a finished edition.</p></div></details><div class="px-card-actions"><a class="px-open" href="/elteknik/">Read about the book<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a class="px-secondary" href="/elteknik/files/provkapitel.pdf">Read the free sample ↗</a></div></div></article>
+          <article class="px-card px-card-camera" data-project-category="create" aria-labelledby="project-camera"><figure class="px-preview px-camera"><picture><source media="(max-width:760px)" srcset="/camera/card-narrow.webp" width="720" height="660"><img src="/camera/card.webp" width="1200" height="630" loading="lazy" decoding="async" alt="One café photo in five slices, each in a different Look: Natural, Pocket, Manga, Woodblock print and Watercolour, with Fuji’s die-cut sticker waving"></picture></figure><div class="px-copy"><div class="px-card-meta"><span>Tools</span><span>Browser app</span></div><div class="px-mascot-title"><div><p class="px-eyebrow">On-device image processing</p><h3 id="project-camera">Pocket Camera</h3></div><img class="px-mascot" src="/assets/mascots/tetsuo-teach.webp" width="80" height="112" alt="" loading="lazy" decoding="async"></div><p class="px-summary">A camera and photo editor with the island’s own art styles. Shoot through Pocket, Manga, Woodblock print or Old TV, mix up to three, and stick on the residents’ die-cut stickers.</p><div class="px-facts"><span>Camera &amp; photo editor</span><span>English</span></div><details class="px-details"><summary>What can I do here?<span aria-hidden="true">＋</span></summary><div class="px-detail-content"><ul><li>Every Look from Johansson World, live on the camera or on your own photos</li><li>Mix up to three Looks; adjust light, colour and the size of the pattern</li><li>Die-cut stickers of Thuan and Fuji, and a film camera’s date stamp</li></ul><p><b>Start here.</b> Start the camera, swipe across the picture to change the Look, tap Mix to add a second, or roll the dice for a surprise. Photos stay on your device.</p></div></details><div class="px-card-actions"><a class="px-open" href="/camera/">Open the camera<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div></div></article>
+        </div>
       </div>
     </section>
 
     <hr class="section-divider">
 
-    <!-- The latest posts from the hotel review blog. -->
+    <section class="studio-home-link" aria-labelledby="studio-home-heading">
+      <div class="container">
+        <div class="studio-home-content">
+          <img src="/animation-studio/johansson-logo.svg" width="120" height="120" alt="">
+          <div>
+            <h2 id="studio-home-heading">Johansson Animation Studios</h2>
+            <p>Chisum, Johansson World and Sakura Shōten show how I use WebGL, interface design and custom tools to make complex environments explorable.</p>
+          </div>
+          <a href="/animation-studio/">Visit the studio <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Field notes from work on the road. -->
     <section class="section section-alt" id="blog">
       <span id="journal" aria-hidden="true"></span>
       <div class="container section-shell">
-        <div class="section-header"><div class="section-decor" id="decor-blog"></div><h2>Hotel reviews &amp; stories</h2><p>Parking, receipts and the occasional story from the road.</p></div>
+        <div class="section-header"><div class="section-decor" id="decor-blog"></div><h2>Field Notes</h2><p>Hotel logistics for field service trips, from vehicle access and EV charging to parking receipts and card holds.</p></div>
         <div data-blog-feed data-limit="3">
           <div class="blog-feed-list" data-blog-list>
             <article class="blog-feed-item">
               <div class="blog-feed-meta"><span class="blog-feed-topic">Hotel review</span><time datetime="2026-10-27">27 Oct 2026</time></div>
               <h3><a href="/blog/scandic-laajavuori-jyvaskyla/">Scandic Laajavuori, Jyväskylä: easy free parking and a spa with a real pool</a></h3>
               <p>One night at Scandic Laajavuori in Jyväskylä. The free parking is easy, and a spa with a proper swimming pool is included in the stay.</p>
-              <div class="blog-feed-links"><a class="blog-read" href="/blog/scandic-laajavuori-jyvaskyla/" hreflang="en">Read review →</a><a class="blog-parking" href="/hotels/#review-scandic-laajavuori-2026-10-24" aria-label="Parking details for Scandic Laajavuori, Jyväskylä">Parking details</a></div>
+              <ul class="blog-logistics" aria-label="Parking and vehicle details"><li><strong>Parking:</strong> Free outdoors</li><li><strong>EV charging:</strong> Paid via Plugit</li><li><strong>Card hold:</strong> None on this stay</li></ul>
+              <div class="blog-feed-links"><a class="blog-read" href="/blog/scandic-laajavuori-jyvaskyla/" hreflang="en">Read review →</a><a class="blog-parking" href="/hotels/#review-scandic-laajavuori-2026-10-24" aria-label="Parking details for Scandic Laajavuori, Jyväskylä">Open hotel record</a></div>
             </article>
             <article class="blog-feed-item">
               <div class="blog-feed-meta"><span class="blog-feed-topic">Hotel review</span><time datetime="2026-10-25">25 Oct 2026</time></div>
               <h3><a href="/blog/scandic-elmia-jonkoping/">Scandic Elmia, Jönköping: a fair price, with parking and a card hold on the side</a></h3>
               <p>A fair room price, but parking was paid separately through Pair Parking, and at check-in they still asked to reserve my credit card.</p>
-              <div class="blog-feed-links"><a class="blog-read" href="/blog/scandic-elmia-jonkoping/" hreflang="en">Read review →</a><a class="blog-parking" href="/hotels/#review-scandic-elmia-2026-10-24" aria-label="Parking details for Scandic Elmia, Jönköping">Parking details</a></div>
+              <ul class="blog-logistics" aria-label="Parking and vehicle details"><li><strong>Parking:</strong> Paid separately</li><li><strong>Receipt:</strong> Separate parking receipt</li><li><strong>Card hold:</strong> Requested at check-in</li></ul>
+              <div class="blog-feed-links"><a class="blog-read" href="/blog/scandic-elmia-jonkoping/" hreflang="en">Read review →</a><a class="blog-parking" href="/hotels/#review-scandic-elmia-2026-10-24" aria-label="Parking details for Scandic Elmia, Jönköping">Open hotel record</a></div>
             </article>
             <article class="blog-feed-item">
               <div class="blog-feed-meta"><span class="blog-feed-topic">Hotel review</span><time datetime="2026-10-23">23 Oct 2026</time></div>
               <h3><a href="/blog/scandic-rosendahl-tampere/">Scandic Rosendahl, Tampere: paid parking on one bill</a></h3>
-              <p>Parking at Scandic Rosendahl is not free, but you pay for it at the hotel and it goes on the hotel bill. One receipt for the stay makes it Easy.</p>
-              <div class="blog-feed-links"><a class="blog-read" href="/blog/scandic-rosendahl-tampere/" hreflang="en">Read review →</a><a class="blog-parking" href="/hotels/#review-scandic-rosendahl-2026-10-25" aria-label="Parking details for Scandic Rosendahl, Tampere">Parking details</a></div>
+              <p>Pay for parking at the hotel and get the room and parking on one bill.</p>
+              <ul class="blog-logistics" aria-label="Parking and vehicle details"><li><strong>Parking:</strong> Pay at reception</li><li><strong>Receipt:</strong> On the hotel bill</li></ul>
+              <div class="blog-feed-links"><a class="blog-read" href="/blog/scandic-rosendahl-tampere/" hreflang="en">Read review →</a><a class="blog-parking" href="/hotels/#review-scandic-rosendahl-2026-10-25" aria-label="Parking details for Scandic Rosendahl, Tampere">Open hotel record</a></div>
             </article>
           </div>
         </div>
-        <div class="read-all"><a href="/blog/">Read the blog →</a></div>
+        <div class="read-all"><a href="/blog/">Read Field Notes →</a></div>
       </div>
     </section>
 
     <!-- Dashed divider -->
     <hr class="section-divider">
 
-    <!-- About — gradient + centered -->
-    <section class="section section-mint" id="about">
-      <div class="container section-shell">
-        <div class="about-blobs">
-          <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
-          <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
-        </div>
-        <div class="about-layout">
-          <div class="about-identity">
-            <div id="about-logo" class="about-logo logo-seal"></div>
-            <div class="about-identity-copy">
-              <strong>Nils Johansson</strong>
-              <span id="about-role"></span>
-              <span id="about-location" class="about-location"></span>
-            </div>
-          </div>
-          <div class="about-content">
-            <div class="section-label-bar">About</div>
-            <h2 id="about-heading">Engineering with a wider field of view</h2>
-            <p class="about-bio" id="about-bio"></p>
-            <div class="social-links" id="social-links"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Dashed divider -->
-    <hr class="section-divider">
-
-    <!-- Locations — map cards -->
+    <!-- Locations and deployment scope -->
     <section class="section" id="locations">
       <div class="container">
         <div class="section-header">
           <div class="section-decor"></div>
           <div class="section-subtitle">Across borders</div>
           <h2>Locations</h2>
-          <p>Working between Sweden and Southeast Asia, with an international field-service perspective.</p>
+          <p>Based in Sweden, with ties to Quảng Nam, Vietnam. My work spans Nordic industrial sites, shipboard assignments and international commissioning projects.</p>
         </div>
-        <div class="locations-grid" id="locations-grid"></div>
+        <div class="locations-grid" id="locations-grid">
+          <article class="location-card"><div class="location-info">
+            <p class="location-label">Sweden</p><h3 class="location-name">Stora Mellösa, Örebro County</h3>
+            <p class="location-scope">Nordic field service, calibration and technical instruction.</p>
+            <a class="location-link" href="https://www.google.com/maps/search/?api=1&amp;query=Stora+Mell%C3%B6sa%2C+Sweden">View Stora Mellösa on the map</a>
+          </div></article>
+          <article class="location-card"><div class="location-info">
+            <p class="location-label">Vietnam</p><h3 class="location-name">Nam Phước, Quảng Nam</h3>
+            <p class="location-scope">A personal base in Southeast Asia, a region where I have worked on industrial commissioning.</p>
+            <a class="location-link" href="https://www.google.com/maps/search/?api=1&amp;query=Nam+Ph%C6%B0%E1%BB%9Bc%2C+Qu%E1%BA%A3ng+Nam%2C+Vietnam">View Nam Phước on the map</a>
+          </div></article>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <footer id="site-footer" class="site-footer"></footer>
+  <footer id="site-footer" class="site-footer" data-static-footer>
+    <div class="office-footer-inner">
+      <div>
+        <a class="office-footer-brand" href="/">The Office of<br><strong>Nils Johansson</strong></a>
+        <nav class="office-contact" aria-label="Professional contact">
+          <a href="https://www.linkedin.com/in/nils-johansson-86744583">Contact on LinkedIn</a>
+          <a href="https://github.com/nj22az">GitHub</a>
+        </nav>
+      </div>
+      <nav class="office-footer-nav" aria-label="Footer navigation">
+        <div><p>Office</p><ul><li><a href="/#about">About Nils Johansson</a></li><li><a href="/#locations">Locations</a></li></ul></div>
+        <div><p>Explore</p><ul><li><a href="/#projects">Tools &amp; Learning</a></li><li><a href="/animation-studio/">Animation Studio</a></li><li><a href="/blog/">Field Notes</a></li></ul></div>
+        <div><p>Resources</p><ul><li><a href="/hotels/">Hotel finder</a></li><li><a href="/animation-studio/#digital-downloads">Digital downloads</a></li><li><a href="https://3va6hr-fw.myshopify.com/">Shop</a></li><li><a href="https://github.com/nj22az/nj22az.github.io/blob/main/README.md#ownership-and-reuse">Rights &amp; credits</a></li></ul></div>
+      </nav>
+      <div class="office-footer-bottom"><span>© Nils Johansson</span><a href="#main-content">Back to top <span aria-hidden="true">&uarr;</span></a></div>
+    </div>
+  </footer>
 
   <script src="/config.js?v=20261118-animation-studio"></script>
-  <script src="/assets/js/project-explorer.js?v=20261118-animation-studio" defer></script>
-  <script src="/shared.js?v=hotel-journal-1"></script>
+  <script src="/assets/js/project-explorer.js?v=static-1" defer></script>
+  <script src="/shared.js?v=portfolio-1"></script>
   <script src="/assets/js/office-calendar.js?v=site-polish-1" defer></script>
-  <script>
-    (function () {
-      "use strict";
-
-      function $(sel) { return document.querySelector(sel); }
-
-      /* Decorative leaf icons above section headers */
-      var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';
-      document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafSvg; });
-
-      /* About */
-      $("#about-logo").innerHTML = CONFIG.logo(140);
-      $("#about-role").textContent = CONFIG.author.role;
-      $("#about-location").textContent = "Based in " + CONFIG.author.location;
-      $("#about-bio").textContent = CONFIG.author.bio;
-
-      $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
-        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + key + '">' +
-          siteIcon(key) + '</a>';
-      }).join("");
-
-      /* Locations — map cards */
-      if (CONFIG.author.locations) {
-        $("#locations-grid").innerHTML = CONFIG.author.locations.map(function (loc) {
-          return '<div class="location-card reveal">' +
-            '<iframe class="location-map" src="' + loc.embed + '" title="Map of ' + loc.name + '" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' +
-            '<div class="location-info">' +
-              '<div class="location-meta"><div class="location-label">' + loc.label + '</div><span class="location-status">Field base</span></div>' +
-              '<div class="location-name">' + loc.name + '</div>' +
-            '</div>' +
-          '</div>';
-        }).join("");
-      }
-
-      /* Staggered scroll-triggered reveals */
-      var items = document.querySelectorAll(".bento-card, .section-header, .about-layout, .hero-photo, .location-card");
-      items.forEach(function (el) { el.classList.add("reveal"); });
-      var obs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
-        });
-      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
-      items.forEach(function (el) { obs.observe(el); });
-
-    })();
-  </script>
-  <script src="/assets/js/blog-posts.js?v=2"></script>
-  <script src="/assets/js/blog-feed.js?v=hotel-journal-1"></script>
 </body>
 </html>
 

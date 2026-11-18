@@ -502,9 +502,9 @@ def build(reviews, posts=None):
       <a href="/blog/">Reviews &amp; stories</a>
       <a href="/hotels/" aria-current="page">Hotel finder</a>
     </nav>
-    <header class="journal-masthead" aria-label="Hotel reviews and stories">
-      <p class="journal-title">Hotel reviews &amp; stories</p>
-      <p>Hotel stays, parking and receipts from my field service trips, with the occasional story.</p>
+    <header class="journal-masthead" aria-label="Field Notes">
+      <p class="journal-title">Field Notes</p>
+      <p>Notes from field service trips, with hotel reports on parking, vehicle access and receipts.</p>
     </header>
     <div class="hotel-page-head journal-content-heading">
       <h1>Hotel finder</h1>
@@ -583,7 +583,7 @@ def build(reviews, posts=None):
   </main>
   <footer id="site-footer" class="site-footer"></footer>
   <script src="/config.js?v=20261027-hotels"></script>
-  <script src="/shared.js?v=journal-shell-1"></script>
+  <script src="/shared.js?v=portfolio-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
   <script src="/hotels/hotels.js?v=11"></script>

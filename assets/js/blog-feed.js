@@ -43,10 +43,20 @@
       article.appendChild(meta);
       var heading=node(root.dataset.heading || 'h3'), link=node('a','',p.title);link.href=url;heading.appendChild(link);article.appendChild(heading);
       article.appendChild(node('p','',p.excerpt));
+      if (p.logistics && p.logistics.length) {
+        var badges = node('ul', 'blog-logistics');
+        badges.setAttribute('aria-label', 'Parking and vehicle details');
+        p.logistics.forEach(function (entry) {
+          var badge = node('li');
+          badge.append(node('strong', '', entry[0] + ': '), entry[1]);
+          badges.appendChild(badge);
+        });
+        article.appendChild(badges);
+      }
       var readLabel=p.part?'Read part '+p.part+' →':isReview(p)?'Read review →':'Read article →';
       var actions=node('div','blog-feed-links'), read=node('a','blog-read',readLabel);read.href=url;read.hreflang='en';actions.appendChild(read);
       if(/^[a-z0-9-]+$/.test(p.hotel || '')) {
-        var parking=node('a','blog-parking','Parking details');
+        var parking=node('a','blog-parking','Open hotel record');
         parking.href='/hotels/#review-'+p.hotel;
         parking.setAttribute('aria-label','Parking details for '+p.title.split(':')[0]);
         actions.appendChild(parking);

@@ -11,7 +11,21 @@ window.OFFICE_BLOG_POSTS = [
     "stamp": {
       "src": "/assets/images/blog/stamps/stay-laajavuori-thumb.webp",
       "alt": "The front desk of a Japanese bathhouse with its price board and a red curtain, printed as a rubber stamp."
-    }
+    },
+    "logistics": [
+      [
+        "Parking",
+        "Free outdoors"
+      ],
+      [
+        "EV charging",
+        "Paid via Plugit"
+      ],
+      [
+        "Card hold",
+        "None on this stay"
+      ]
+    ]
   },
   {
     "id": "scandic-elmia-jonkoping",
@@ -24,12 +38,26 @@ window.OFFICE_BLOG_POSTS = [
     "stamp": {
       "src": "/assets/images/blog/stamps/stay-elmia-thumb.webp",
       "alt": "The front desk of a Japanese bathhouse with its attendant and price board, printed as a rubber stamp."
-    }
+    },
+    "logistics": [
+      [
+        "Parking",
+        "Paid separately"
+      ],
+      [
+        "Receipt",
+        "Separate parking receipt"
+      ],
+      [
+        "Card hold",
+        "Requested at check-in"
+      ]
+    ]
   },
   {
     "id": "scandic-rosendahl-tampere",
     "title": "Scandic Rosendahl, Tampere: paid parking on one bill",
-    "excerpt": "Parking at Scandic Rosendahl is not free, but you pay for it at the hotel and it goes on the hotel bill. One receipt for the stay makes it Easy.",
+    "excerpt": "Pay for parking at the hotel and get the room and parking on one bill.",
     "url": "/blog/scandic-rosendahl-tampere/",
     "date": "2026-10-23",
     "topic": "Hotel stay",
@@ -37,7 +65,17 @@ window.OFFICE_BLOG_POSTS = [
     "stamp": {
       "src": "/assets/images/blog/stamps/stay-rosendahl-thumb.webp",
       "alt": "The counter and shelves of a small Japanese shop, printed as a rubber stamp."
-    }
+    },
+    "logistics": [
+      [
+        "Parking",
+        "Pay at reception"
+      ],
+      [
+        "Receipt",
+        "On the hotel bill"
+      ]
+    ]
   },
   {
     "id": "best-western-plus-hotel-odense",
@@ -50,7 +88,17 @@ window.OFFICE_BLOG_POSTS = [
     "stamp": {
       "src": "/assets/images/blog/stamps/stay-odense-thumb.webp",
       "alt": "A street of shops running away into the distance, printed as a rubber stamp."
-    }
+    },
+    "logistics": [
+      [
+        "Parking",
+        "Free"
+      ],
+      [
+        "Access",
+        "Long walk from construction-site parking"
+      ]
+    ]
   },
   {
     "id": "hotel-marina-vedbaek",
@@ -63,7 +111,17 @@ window.OFFICE_BLOG_POSTS = [
     "stamp": {
       "src": "/assets/images/blog/stamps/stay-marina-thumb.webp",
       "alt": "Harbour Park by the water in Minato, printed as a rubber stamp."
-    }
+    },
+    "logistics": [
+      [
+        "Parking",
+        "Free outdoors"
+      ],
+      [
+        "Registration",
+        "At reception"
+      ]
+    ]
   },
   {
     "id": "lanternan-som-lyser-svagt",
