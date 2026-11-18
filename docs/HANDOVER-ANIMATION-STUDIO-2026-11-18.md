@@ -17,3 +17,5 @@ The owner asked for a dedicated Project status page in the Studio and authorised
 The site update is scoped to `main` from `949e3dfa5d839560e60cfd875b6f1566ee7345f8`. The checklist begins at five of nineteen verified items. Update the JSON and the Stockholm timestamp when production evidence changes. Reserve “Verified” for a passed check. The page publishes progress text only.
 
 Chromium verified the landing-page link, shared navigation, progress values, and viewport fit at 1280 × 900 and 390 × 844. A simulated status update advanced the bar without reloading and preserved a collapsed section. No physical-device check was performed.
+
+GitHub Pages built the first project status publication from `5db7316624ecf68d1946c0192eb797cd46485a8c`. The landing link and status route returned HTTP 200, and the served JSON matched the committed file byte for byte. The first live data update records the stage-footing audit coverage and the new sole’s ground measurement. It leaves both items open.
