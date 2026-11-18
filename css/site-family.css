@@ -204,7 +204,7 @@ body.office-home.site-family .office-hero { padding-inline: var(--family-gutter)
     gap: 4px;
   }
   .site-family .site-shortcuts a { flex-direction: column; gap: 2px; padding: 2px; font-size: 11px; }
-  body.office-homebody.office-home.site-family .office-hero { padding-top: 124px; }
+  body.office-home.site-family .office-hero { padding-top: calc(var(--family-header) + 16px); }
 }
 
 @media (max-width: 360px) {

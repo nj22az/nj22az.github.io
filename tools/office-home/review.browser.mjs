@@ -36,6 +36,7 @@ try{
   const darkLayout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,background:getComputedStyle(document.body).backgroundColor,button:document.querySelector('.office-appearance-toggle').getBoundingClientRect().width}));
   assert.equal(darkLayout.background,'rgb(0, 0, 0)');assert(!darkLayout.overflow);assert(darkLayout.button>=44);
   const header=await page.locator('.nav-actions').evaluate(e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}));assert(header.left>=0&&header.right<=width,'Header controls fit');
+  assert(await page.evaluate(()=>window.scrollY+document.querySelector('.office-eyebrow').getBoundingClientRect().top>=document.querySelector('#site-nav').getBoundingClientRect().bottom),'Header does not cover the introduction: '+profile);
   await page.locator('.office-calendar-toggle').click();assert(await page.locator('.office-calendar-panel').isVisible());await page.locator('.office-calendar-toggle').click();
   await page.locator('#nav-hamburger').click();assert.equal(await page.locator('#menu-overlay').getAttribute('aria-hidden'),'false');await page.keyboard.press('Escape');
   await page.locator('[data-project-filter="create"]').click();assert.equal(await page.locator('.px-card:visible').count(),2);await page.locator('[data-project-filter="all"]').click();

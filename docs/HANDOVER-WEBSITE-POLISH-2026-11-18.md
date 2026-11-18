@@ -16,3 +16,9 @@ Verification on the main-based candidate:
 - Browser tests use emulated viewports. A physical iPhone or iPad Safari test remains open.
 
 The file-level licences are linked from [third-party notices](../THIRD_PARTY_NOTICES.md).
+
+## Production release
+
+The owner asked to implement the recommendations. The scoped design was published to `main` in [`ebb9b0ff`](https://github.com/nj22az/nj22az.github.io/commit/ebb9b0ff884bd658f343f1c9f978ac4f3ab2c22f). The release fixes a mobile selector so the fixed header clears the opening text, with a matching regression assertion. That fix is carried back to `development` in the commit recording this release.
+
+[GitHub Pages deployed successfully](https://github.com/nj22az/nj22az.github.io/actions/runs/44265631045). Twelve public files matched the deployed commit, including the Office, Studio, Blog and Hotels HTML, the shared styles, the quay opening image and preview assets. The exact release candidate passed all six local Chromium profiles. The [production browser review](https://github.com/nj22az/nj22az.github.io/actions/runs/44265632031) and [production harbour review](https://github.com/nj22az/nj22az.github.io/actions/runs/44265632074) carry the hosted run results. The three public ZIPs are the same releases verified by the preview and download tests.
