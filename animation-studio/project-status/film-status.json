@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:54:07+01:00",
+  "updatedAt": "2026-11-19T14:57:11+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,7 +391,7 @@
   ],
   "activeRender": {
     "label": "First kick cloak contact · changed pose",
-    "completed": 22,
+    "completed": 51,
     "total": 51,
     "unit": "pictures",
     "state": "verifying",
