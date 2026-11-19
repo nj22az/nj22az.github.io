@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T10:43:36+01:00",
+  "updatedAt": "2026-11-19T10:46:58+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -312,7 +312,7 @@
           ],
           "progress": {
             "label": "Finale shot check · original pose",
-            "completed": 55,
+            "completed": 65,
             "total": 79,
             "unit": "pictures",
             "state": "verifying",
@@ -399,7 +399,7 @@
   ],
   "activeRender": {
     "label": "Finale shot check · original pose",
-    "completed": 55,
+    "completed": 65,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
