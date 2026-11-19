@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T10:12:26+01:00",
+  "updatedAt": "2026-11-19T10:26:41+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,11 +390,11 @@
     }
   ],
   "activeRender": {
-    "label": "Finale checker comparison",
+    "label": "Finale shot check · original pose",
     "completed": 0,
-    "total": 5,
-    "unit": "baseline pictures",
+    "total": 79,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Comparing a faster check with the five archived reference pictures."
+    "detail": "Blender is preparing the six-dancer shot check."
   }
 }
