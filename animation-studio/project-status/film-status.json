@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T21:00:45+01:00",
+  "updatedAt": "2026-11-19T21:32:39+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -383,7 +383,7 @@
   ],
   "activeRender": {
     "label": "Whole-cut visibility check",
-    "completed": 69,
+    "completed": 70,
     "total": 75,
     "unit": "cut layers",
     "state": "verifying",
@@ -408,7 +408,7 @@
     },
     {
       "title": "Whole-film checks",
-      "completed": 69,
+      "completed": 70,
       "total": 75,
       "unit": "cut layers",
       "state": "verifying",
