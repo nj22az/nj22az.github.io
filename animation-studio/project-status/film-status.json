@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:48:01+01:00",
+  "updatedAt": "2026-11-19T11:59:08+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -148,11 +148,11 @@
           ],
           "progress": {
             "label": "Violet bouquet shot check",
-            "completed": 0,
+            "completed": 3,
             "total": 36,
             "unit": "pictures",
             "state": "verifying",
-            "detail": "Blender is loading the cast for the bouquet shot."
+            "detail": "Measuring the original shot."
           }
         }
       ]
@@ -399,11 +399,11 @@
   ],
   "activeRender": {
     "label": "Violet bouquet shot check",
-    "completed": 0,
+    "completed": 3,
     "total": 36,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Blender is loading the cast for the bouquet shot."
+    "detail": "Measuring the original shot."
   },
   "milestones": [
     {
