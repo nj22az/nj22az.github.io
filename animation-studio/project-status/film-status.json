@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:27:00+01:00",
+  "updatedAt": "2026-11-19T11:39:46+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -312,11 +312,11 @@
           ],
           "progress": {
             "label": "Finale spacing around Polly",
-            "completed": 0,
+            "completed": 5,
             "total": 79,
             "unit": "pictures",
             "state": "verifying",
-            "detail": "Checking the wider spacing beside Polly and whether the dancers fit the frame."
+            "detail": "Checking the five-dancer fallback."
           }
         }
       ]
@@ -399,11 +399,11 @@
   ],
   "activeRender": {
     "label": "Finale spacing around Polly",
-    "completed": 0,
+    "completed": 5,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking the wider spacing beside Polly and whether the dancers fit the frame."
+    "detail": "Checking the five-dancer fallback."
   },
   "milestones": [
     {
