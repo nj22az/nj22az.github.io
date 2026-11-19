@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T09:42:34+01:00",
+  "updatedAt": "2026-11-19T09:46:52+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -279,7 +279,7 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "queued",
+          "state": "checking",
           "detail": "The six dancers will stand in one row with extra space between them. The shot check follows all six faces through the kick.",
           "steps": [
             {
@@ -294,7 +294,7 @@
         },
         {
           "title": "Separate the finale arm poses",
-          "state": "queued",
+          "state": "checking",
           "detail": "The new trial spaces six dancers in one row and gives each dancer her own arm pose. Lizzie takes one step forward.",
           "steps": [
             {
@@ -355,7 +355,7 @@
             },
             {
               "title": "Render and verify the 28 clean foreground rows",
-              "verified": false
+              "verified": true
             },
             {
               "title": "Render the remaining shots and assemble the cut with the song",
@@ -364,11 +364,11 @@
           ],
           "progress": {
             "label": "Clean cast pass",
-            "completed": 1135,
+            "completed": 1281,
             "total": 1281,
             "unit": "pictures",
-            "state": "rendering",
-            "detail": "Blender is rendering Lizzie’s singer shots. The finale trial is next in the queue."
+            "state": "verified",
+            "detail": "The 28 clean cut rows passed their foreground file check. Blender is now checking the unlinked finale."
           }
         },
         {
@@ -390,11 +390,11 @@
     }
   ],
   "activeRender": {
-    "label": "Clean cast pass",
-    "completed": 1135,
-    "total": 1281,
+    "label": "Finale shot check",
+    "completed": 0,
+    "total": 79,
     "unit": "pictures",
-    "state": "rendering",
-    "detail": "Blender is rendering Lizzie’s singer shots. The finale trial is next in the queue."
+    "state": "verifying",
+    "detail": "Blender is loading the cast for the six-dancer shot check."
   }
 }
