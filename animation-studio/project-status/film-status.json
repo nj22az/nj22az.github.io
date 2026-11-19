@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T19:48:23+01:00",
+  "updatedAt": "2026-11-19T19:49:27+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "s66_won",
-    "completed": 30,
-    "total": 36,
-    "unit": "pictures",
-    "state": "rendering",
-    "detail": "Blender is rendering the foreground for a checked shot."
+    "label": "Whole-cut visibility check",
+    "completed": 0,
+    "total": 75,
+    "unit": "cut layers",
+    "state": "verifying",
+    "detail": "Checking the delivered frames and the singer’s overlays."
   },
   "milestones": [
     {
@@ -400,19 +400,19 @@
     },
     {
       "title": "Cast and character renders",
-      "completed": 1331,
+      "completed": 1367,
       "total": 2715,
       "unit": "source frames",
-      "state": "rendering",
+      "state": "waiting",
       "detail": "Verified frames are ready for the edit. Remaining shots are checked before rendering."
     },
     {
       "title": "Whole-film checks",
       "completed": 0,
-      "total": 0,
+      "total": 75,
       "unit": "cut layers",
-      "state": "waiting",
-      "detail": "Starts after the individual shot fixes."
+      "state": "verifying",
+      "detail": "Checking the final poses, joint motion and supporting feet across the cut."
     },
     {
       "title": "Final video",
@@ -423,5 +423,5 @@
       "detail": "The full edit, sound and playback review follow."
     }
   ],
-  "lastVerifiedAt": "2026-11-19T17:42:35+01:00"
+  "lastVerifiedAt": "2026-11-19T19:49:04+01:00"
 }
