@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:31:32+01:00",
+  "updatedAt": "2026-11-19T14:32:36+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Flying heel cloak contact",
-    "completed": 0,
-    "total": 0,
-    "unit": "",
+    "label": "Flying heel cloak contact · original pose",
+    "completed": 19,
+    "total": 19,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Finding a reachable exterior cloak contact for both pictures."
+    "detail": "Measuring the original shot."
   },
   "milestones": [
     {
