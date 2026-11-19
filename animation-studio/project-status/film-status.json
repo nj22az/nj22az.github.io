@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:24:54+01:00",
+  "updatedAt": "2026-11-19T11:25:57+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "queued",
+          "state": "checking",
           "detail": "The closing chorus correction is installed. Thuận’s brighter violet bouquet and Lizzie’s crown grip are queued for their own checks.",
           "steps": [
             {
@@ -145,7 +145,15 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Violet bouquet shot check",
+            "completed": 0,
+            "total": 36,
+            "unit": "pictures",
+            "state": "verifying",
+            "detail": "Blender is loading the cast for the bouquet shot."
+          }
         }
       ]
     },
@@ -368,7 +376,7 @@
             "total": 1281,
             "unit": "pictures",
             "state": "verified",
-            "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
+            "detail": "The 28 clean cut rows passed their foreground file check. Blender is now checking the violet bouquet shot."
           }
         },
         {
@@ -390,12 +398,12 @@
     }
   ],
   "activeRender": {
-    "label": "Grief close-up",
-    "completed": 1,
-    "total": 1,
-    "unit": "held picture",
+    "label": "Violet bouquet shot check",
+    "completed": 0,
+    "total": 36,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking the one corrected expression in the edit."
+    "detail": "Blender is loading the cast for the bouquet shot."
   },
   "milestones": [
     {
@@ -431,5 +439,5 @@
       "detail": "The full edit, sound and playback review follow."
     }
   ],
-  "lastVerifiedAt": "2026-11-19T09:46:09+01:00"
+  "lastVerifiedAt": "2026-11-19T11:25:13+01:00"
 }
