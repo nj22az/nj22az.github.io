@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T12:41:45+01:00",
+  "updatedAt": "2026-11-19T12:53:51+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Thunder cloak contact",
-    "completed": 0,
+    "label": "Thunder cloak contact · original pose",
+    "completed": 15,
     "total": 23,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Blender is loading the shot for the visibility and motion check."
+    "detail": "Measuring the original shot."
   },
   "milestones": [
     {
