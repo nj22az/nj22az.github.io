@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T21:42:04+01:00",
+  "updatedAt": "2026-11-19T21:43:08+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -324,7 +324,7 @@
             },
             {
               "title": "Check the combined final revision",
-              "verified": false
+              "verified": true
             },
             {
               "title": "Watch all changed shots in the edit",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Whole-cut visibility check",
-    "completed": 74,
-    "total": 75,
-    "unit": "cut layers",
-    "state": "verifying",
-    "detail": "Checking the delivered frames and the singer’s overlays."
+    "label": "Clean cast pass",
+    "completed": 1281,
+    "total": 1281,
+    "unit": "pictures",
+    "state": "verified",
+    "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
   },
   "milestones": [
     {
@@ -408,11 +408,11 @@
     },
     {
       "title": "Whole-film checks",
-      "completed": 74,
+      "completed": 75,
       "total": 75,
       "unit": "cut layers",
-      "state": "verifying",
-      "detail": "Checking the final poses, joint motion and supporting feet across the cut."
+      "state": "verified",
+      "detail": "The full cut was checked. Any remaining findings are recorded for the director."
     },
     {
       "title": "Final video",
