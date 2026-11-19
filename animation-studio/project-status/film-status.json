@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:15:09+01:00",
+  "updatedAt": "2026-11-19T14:16:13+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -395,7 +395,7 @@
     "total": 0,
     "unit": "",
     "state": "verifying",
-    "detail": "Finding a reachable exterior cloak contact for both pictures."
+    "detail": "Checked at least 105,000 placements for a reachable contact in both pictures."
   },
   "milestones": [
     {
