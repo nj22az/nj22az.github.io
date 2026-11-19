@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T23:01:35+01:00",
+  "updatedAt": "2026-11-19T23:16:03+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -383,7 +383,7 @@
   ],
   "activeRender": {
     "label": "Note 008 render remaining character pictures",
-    "completed": 819,
+    "completed": 1104,
     "total": 1348,
     "unit": "pictures",
     "state": "rendering",
