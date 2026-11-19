@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T19:16:55+01:00",
+  "updatedAt": "2026-11-19T19:18:27+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "queued",
+          "state": "checking",
           "detail": "Checking the right-hand grip below Thuận’s chin and keeping Lizzie’s left arm lowered.",
           "steps": [
             {
@@ -141,7 +141,15 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Thuận’s violet bouquet",
+            "completed": 0,
+            "total": 2,
+            "unit": "checks",
+            "state": "verifying",
+            "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
+          }
         }
       ]
     },
@@ -382,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Clean cast pass",
-    "completed": 1281,
-    "total": 1281,
-    "unit": "pictures",
-    "state": "verified",
-    "detail": "The clean cast pass is verified. Current job · Note 008 canonical edge-depth check of the same bouquet pose"
+    "label": "Thuận’s violet bouquet",
+    "completed": 0,
+    "total": 2,
+    "unit": "checks",
+    "state": "verifying",
+    "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
   },
   "milestones": [
     {
