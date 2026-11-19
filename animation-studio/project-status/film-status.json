@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T17:21:08+01:00",
+  "updatedAt": "2026-11-19T17:24:12+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Flying heel · fitting the miss",
-    "completed": 0,
-    "total": 0,
-    "unit": "",
+    "label": "Flying heel · clear miss",
+    "completed": 3,
+    "total": 19,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Finding a reachable pose that clears the cloak on the same beat."
+    "detail": "Measuring the gap to Jack and his cloak."
   },
   "milestones": [
     {
