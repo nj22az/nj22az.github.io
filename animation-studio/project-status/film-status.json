@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T16:00:12+01:00",
+  "updatedAt": "2026-11-19T16:06:12+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -383,7 +383,7 @@
   ],
   "activeRender": {
     "label": "First kick · original",
-    "completed": 12,
+    "completed": 31,
     "total": 51,
     "unit": "pictures",
     "state": "verifying",
