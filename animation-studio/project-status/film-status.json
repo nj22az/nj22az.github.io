@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:52:03+01:00",
+  "updatedAt": "2026-11-19T14:54:07+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "First kick cloak contact · original pose",
-    "completed": 51,
+    "label": "First kick cloak contact · changed pose",
+    "completed": 22,
     "total": 51,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Measuring the original shot."
+    "detail": "Checking visibility and motion for the changed shot."
   },
   "milestones": [
     {
