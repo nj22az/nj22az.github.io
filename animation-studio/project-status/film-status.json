@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T13:35:28+01:00",
+  "updatedAt": "2026-11-19T13:36:55+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Thunder cloak contact · original pose",
-    "completed": 23,
-    "total": 23,
-    "unit": "pictures",
+    "label": "Thunder cloak contact",
+    "completed": 0,
+    "total": 0,
+    "unit": "",
     "state": "verifying",
-    "detail": "Measuring the original shot."
+    "detail": "Finding a reachable exterior cloak contact for both pictures."
   },
   "milestones": [
     {
