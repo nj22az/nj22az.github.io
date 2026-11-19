@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-18T20:59:53+01:00",
+  "updatedAt": "2026-11-19T02:14:37+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -127,7 +127,7 @@
         {
           "title": "Stage numbers and props",
           "state": "checking",
-          "detail": "The closing chorus fix is installed. The posy trial cleared bouquet-to-body clipping in all 37 pictures. The remaining grip contact and the rest of the shot are being checked.",
+          "detail": "The closing chorus fix is installed. A closer glove fit is being checked in the hat scene. The posy trial cleared the bouquet but failed the hand-overlap check.",
           "steps": [
             {
               "title": "Install the checked closing chorus arm pose",
@@ -156,7 +156,7 @@
         {
           "title": "Right hand and wrist",
           "state": "needs-work",
-          "detail": "An agent is preparing a steadier wrist-and-elbow pose for Thuận’s hand during the turn.",
+          "detail": "The wrist trial cleared the marked pose. The adjacent poses still need a smooth transition. The retry will also check the exact render frames.",
           "steps": [
             {
               "title": "Measure clipping and wrist turns in the kick",
@@ -295,7 +295,7 @@
         {
           "title": "Join hands to shoulders",
           "state": "needs-work",
-          "detail": "An agent is fitting all four links against the posed shoulders. Earlier trials still had overlap or visible gaps.",
+          "detail": "Two links passed the eight-picture trial. The revised fit checks the two remaining links and keeps Polly’s free arm clear.",
           "steps": [
             {
               "title": "Clear glove and sleeve overlaps",
