@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T18:54:11+01:00",
+  "updatedAt": "2026-11-19T18:55:15+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -384,10 +384,10 @@
   "activeRender": {
     "label": "River fight clearance",
     "completed": 2,
-    "total": 2,
+    "total": 3,
     "unit": "checks",
     "state": "verifying",
-    "detail": "Checking the new pose clears Jack with the reaction on the same beat."
+    "detail": "Checking the simpler staging and preserving the reaction timing."
   },
   "milestones": [
     {
