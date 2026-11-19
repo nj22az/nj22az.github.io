@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:42:51+01:00",
+  "updatedAt": "2026-11-19T11:45:55+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -312,7 +312,7 @@
           ],
           "progress": {
             "label": "Finale spacing around Polly",
-            "completed": 35,
+            "completed": 65,
             "total": 79,
             "unit": "pictures",
             "state": "verifying",
@@ -399,7 +399,7 @@
   ],
   "activeRender": {
     "label": "Finale spacing around Polly",
-    "completed": 35,
+    "completed": 65,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
