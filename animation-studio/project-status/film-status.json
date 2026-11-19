@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T23:28:35+01:00",
+  "updatedAt": "2026-11-19T23:32:06+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Assembling the complete film",
-    "completed": 0,
-    "total": 0,
-    "unit": "",
-    "state": "rendering",
-    "detail": "Remotion is combining the verified pictures with the song."
+    "label": "Clean cast pass",
+    "completed": 1281,
+    "total": 1281,
+    "unit": "pictures",
+    "state": "verified",
+    "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
   },
   "milestones": [
     {
@@ -419,7 +419,7 @@
       "completed": 0,
       "total": 0,
       "unit": "",
-      "state": "rendering",
+      "state": "waiting",
       "detail": "The full edit, sound and playback review follow."
     }
   ],
