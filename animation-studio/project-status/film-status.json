@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T18:15:33+01:00",
+  "updatedAt": "2026-11-19T18:19:18+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -127,7 +127,7 @@
         {
           "title": "Stage numbers and props",
           "state": "checking",
-          "detail": "Thuận holds the violets below her chin so the flowers, ribbon and her grip read in the shot.",
+          "detail": "Checking the right-hand grip below Thuận’s chin and keeping Lizzie’s left arm lowered.",
           "steps": [
             {
               "title": "Install the checked closing chorus arm pose",
@@ -232,7 +232,7 @@
         {
           "title": "Fight contacts and planted steps",
           "state": "queued",
-          "detail": "The director approved the upright retreat. The three strikes can miss Jack, with his reactions kept on the original beats.",
+          "detail": "The upright retreat is rendered. The three strike checks kept the originals under the director’s rule.",
           "steps": [
             {
               "title": "Verify the upright retreat and its revised cut",
@@ -279,31 +279,31 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "queued",
-          "detail": "The five-dancer finale check follows every face and the space around the two dancers on the left.",
+          "state": "needs-work",
+          "detail": "Every face was visible in the five-dancer trial. The original finale stays.",
           "steps": [
             {
               "title": "Set the five-person formation and camera",
               "verified": true
             },
             {
-              "title": "Check every face in the revised shot",
-              "verified": false
+              "title": "Check every face in the trial",
+              "verified": true
             }
           ]
         },
         {
           "title": "Separate the finale arm poses",
-          "state": "queued",
-          "detail": "The finale check gives each of the five dancers her own arm pose while keeping the kicks together.",
+          "state": "needs-work",
+          "detail": "The five-dancer trial missed the required fist spacing. The original stays in the cut.",
           "steps": [
             {
               "title": "Prepare the five-person formation",
               "verified": true
             },
             {
-              "title": "Pass the clearance and arm-length checks",
-              "verified": false
+              "title": "Complete the finale decision",
+              "verified": true
             },
             {
               "title": "Watch the full kickline together",
