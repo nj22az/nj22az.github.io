@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T10:26:41+01:00",
+  "updatedAt": "2026-11-19T10:28:45+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,10 +391,10 @@
   ],
   "activeRender": {
     "label": "Finale shot check · original pose",
-    "completed": 0,
+    "completed": 5,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Blender is preparing the six-dancer shot check."
+    "detail": "Measuring the original shot."
   }
 }
