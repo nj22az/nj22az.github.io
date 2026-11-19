@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:16:13+01:00",
+  "updatedAt": "2026-11-19T14:17:16+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -392,10 +392,10 @@
   "activeRender": {
     "label": "Thunder cloak contact",
     "completed": 0,
-    "total": 0,
-    "unit": "",
+    "total": 23,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checked at least 105,000 placements for a reachable contact in both pictures."
+    "detail": "Blender is loading the shot for the visibility and motion check."
   },
   "milestones": [
     {
