@@ -1,9 +1,14 @@
 "use strict";
 
 const checklist = document.querySelector("#status-checklist");
+const checklistDetails = document.querySelector("#status-details");
 const overall = document.querySelector("#status-overall");
 const count = document.querySelector("#status-count");
+const activeJob = document.querySelector("#status-active-job");
 const activeRender = document.querySelector("#status-active-render");
+const milestones = document.querySelector("#status-milestones");
+const milestoneList = document.querySelector("#status-milestone-list");
+const lastVerified = document.querySelector("#status-verified");
 const update = document.querySelector("#status-update");
 const states = {
   verified: "Verified",
@@ -15,6 +20,7 @@ const renderStates = {
   rendering: "Rendering",
   verifying: "Verifying",
   verified: "Verified",
+  waiting: "Waiting",
   blocked: "Blocked"
 };
 const formatter = new Intl.DateTimeFormat("en-GB", {
@@ -47,22 +53,29 @@ function progressBar(label, verified, total) {
   return bar;
 }
 
-function renderMeasurement(data, inItem = false) {
+function renderMeasurement(data, layout) {
   if (!data) return null;
-  const {label, completed, total, unit, state, detail} = data;
-  if (typeof label !== "string" || !label.trim() || typeof unit !== "string" || !unit.trim() ||
-      !Object.hasOwn(renderStates, state) || !Number.isSafeInteger(completed) ||
-      !Number.isSafeInteger(total) || total <= 0 || completed < 0 || completed > total) return null;
+  const {completed, total, unit, state, detail} = data;
+  const label = layout === "milestone" ? data.title : data.label;
+  if (typeof label !== "string" || !label.trim() || !Object.hasOwn(renderStates, state) ||
+      !Number.isSafeInteger(completed) || !Number.isSafeInteger(total) || completed < 0 ||
+      completed > total || (total > 0 && (typeof unit !== "string" || !unit.trim()))) return null;
 
-  const block = element(inItem ? "div" : "section", "status-render");
-  if (inItem) block.classList.add("status-render--item");
+  const block = element(layout === "milestone" ? "li" : "div", `status-render status-render--${layout}`);
   const heading = element("div", "status-render-heading");
-  const amount = `${wholeNumber.format(completed)} of ${wholeNumber.format(total)} ${unit}`;
-  heading.append(element(inItem ? "strong" : "h3", "status-render-title", label),
-                 element("span", "status-render-count", `${renderStates[state]} · ${amount}`));
-  const meter = progressBar(label, completed, total);
-  meter.setAttribute("aria-valuetext", amount);
-  block.append(heading, meter);
+  const amount = total ? `${wholeNumber.format(completed)} of ${wholeNumber.format(total)} ${unit}` : "";
+  const percent = layout === "milestone" && completed > 0 && completed < total
+    ? ` (${Math.floor(completed * 100 / total)}%)` : "";
+  const text = [renderStates[state], amount && amount + percent].filter(Boolean).join(" · ");
+  const reading = element("span", "status-render-count", text);
+  reading.dataset.state = state;
+  heading.append(element("strong", "status-render-title", label), reading);
+  block.append(heading);
+  if (total) {
+    const meter = progressBar(label, completed, total);
+    meter.setAttribute("aria-valuetext", amount);
+    block.append(meter);
+  }
   if (typeof detail === "string" && detail.trim()) block.append(element("p", "status-render-detail", detail));
   return block;
 }
@@ -114,7 +127,7 @@ function renderGroup(group, expanded) {
     state.dataset.state = item.state;
     title.append(element("strong", "", item.title), state);
     row.append(title, element("p", "", item.detail));
-    const measured = renderMeasurement(item.progress, true);
+    const measured = renderMeasurement(item.progress, "item");
     if (measured) row.append(measured);
     row.append(renderSteps(item, `item:${group.id}:${item.title}`, expanded));
     items.append(row);
@@ -130,7 +143,7 @@ function showUpdatedAt(retrying = false) {
   if (message === updateMessage) return;
   updateMessage = message;
   if (!Number.isFinite(timestamp)) {
-    update.textContent = retrying ? "The checklist is temporarily unavailable. Checking again in a minute."
+    update.textContent = retrying ? "Status is temporarily unavailable. Checking again in a minute."
       : "Publication time is unavailable.";
     return;
   }
@@ -141,20 +154,33 @@ function showUpdatedAt(retrying = false) {
   if (retrying) update.append(" Could not check for a newer snapshot.");
 }
 
+function showLastVerified(value) {
+  lastVerified.hidden = !Number.isFinite(Date.parse(value));
+  if (lastVerified.hidden) return;
+  const time = element("time", "", formatter.format(new Date(value)));
+  time.dateTime = value;
+  lastVerified.replaceChildren("Last verified ", time, " Stockholm time.");
+}
+
 function render(data) {
   const detailSelector = "details[data-progress-key]";
   const expanded = new Map([...checklist.querySelectorAll(detailSelector)].map(node => [node.dataset.progressKey, node.open]));
   const focusedKey = document.activeElement?.closest(detailSelector)?.dataset.progressKey;
-  const allItems = data.groups.flatMap(group => group.items);
+  const groups = data.groups ?? [];
+  const allItems = groups.flatMap(group => group.items);
   const verified = allItems.filter(item => item.state === "verified").length;
-  overall.max = allItems.length;
+  overall.max = Math.max(1, allItems.length);
   overall.value = verified;
-  overall.hidden = false;
-  count.textContent = `${verified} of ${allItems.length} milestones verified`;
-  const measured = renderMeasurement(data.activeRender);
+  count.textContent = `${verified} of ${allItems.length} checklist items verified`;
+  checklistDetails.hidden = !allItems.length;
+  const measured = renderMeasurement(data.activeRender, "active");
   activeRender.replaceChildren(...(measured ? [measured] : []));
-  activeRender.hidden = !measured;
-  checklist.replaceChildren(...data.groups.map(group => renderGroup(group, expanded)));
+  activeJob.hidden = !measured;
+  const rows = (data.milestones ?? []).map(row => renderMeasurement(row, "milestone")).filter(Boolean);
+  milestoneList.replaceChildren(...rows);
+  milestones.hidden = !rows.length;
+  showLastVerified(data.lastVerifiedAt);
+  checklist.replaceChildren(...groups.map(group => renderGroup(group, expanded)));
   checklist.setAttribute("aria-busy", "false");
   if (focusedKey) {
     [...checklist.querySelectorAll(detailSelector)].find(node => node.dataset.progressKey === focusedKey)

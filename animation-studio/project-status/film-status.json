@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T10:36:54+01:00",
+  "updatedAt": "2026-11-19T10:41:29+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -279,7 +279,7 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "queued",
+          "state": "checking",
           "detail": "The six dancers will stand in one row with extra space between them. The shot check follows all six faces through the kick.",
           "steps": [
             {
@@ -294,7 +294,7 @@
         },
         {
           "title": "Separate the finale arm poses",
-          "state": "queued",
+          "state": "checking",
           "detail": "The new trial spaces six dancers in one row and gives each dancer her own arm pose. Lizzie takes one step forward.",
           "steps": [
             {
@@ -309,7 +309,15 @@
               "title": "Watch the full kickline together",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Finale shot check · original pose",
+            "completed": 45,
+            "total": 79,
+            "unit": "pictures",
+            "state": "verifying",
+            "detail": "Measuring the original shot."
+          }
         }
       ]
     },
@@ -368,7 +376,7 @@
             "total": 1281,
             "unit": "pictures",
             "state": "verified",
-            "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
+            "detail": "The 28 clean cut rows passed their foreground file check. Blender is now checking the unlinked finale."
           }
         },
         {
@@ -391,10 +399,45 @@
   ],
   "activeRender": {
     "label": "Finale shot check · original pose",
-    "completed": 35,
+    "completed": 45,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
     "detail": "Measuring the original shot."
-  }
+  },
+  "milestones": [
+    {
+      "title": "Background images",
+      "completed": 112,
+      "total": 112,
+      "unit": "images",
+      "state": "verified",
+      "detail": "All 53 backgrounds are ready."
+    },
+    {
+      "title": "Cast and character renders",
+      "completed": 1281,
+      "total": 2715,
+      "unit": "source frames",
+      "state": "waiting",
+      "detail": "Verified frames are ready for the edit. Remaining shots are checked before rendering."
+    },
+    {
+      "title": "Whole-film checks",
+      "completed": 0,
+      "total": 0,
+      "unit": "cut layers",
+      "state": "waiting",
+      "detail": "Starts after the individual shot fixes."
+    },
+    {
+      "title": "Final video",
+      "completed": 0,
+      "total": 0,
+      "unit": "",
+      "state": "waiting",
+      "detail": "The full edit, sound and playback review follow."
+    }
+  ],
+  "lastVerifiedAt": "2026-11-19T09:46:09+01:00"
 }
