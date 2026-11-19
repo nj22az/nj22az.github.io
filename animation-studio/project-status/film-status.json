@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T15:42:28+01:00",
+  "updatedAt": "2026-11-19T16:00:12+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Three fight strikes",
-    "completed": 0,
-    "total": 3,
-    "unit": "shots",
+    "label": "First kick · original",
+    "completed": 12,
+    "total": 51,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking the space around Jack while keeping his reactions on the same beats."
+    "detail": "Measuring the gap to Jack and his cloak."
   },
   "milestones": [
     {
