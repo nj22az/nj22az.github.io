@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T15:38:22+01:00",
+  "updatedAt": "2026-11-19T15:42:28+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Toe-kick clearance",
-    "completed": 2,
+    "label": "Three fight strikes",
+    "completed": 0,
     "total": 3,
-    "unit": "checks",
+    "unit": "shots",
     "state": "verifying",
-    "detail": "Checking the simpler staging and preserving the reaction timing."
+    "detail": "Checking the space around Jack while keeping his reactions on the same beats."
   },
   "milestones": [
     {
