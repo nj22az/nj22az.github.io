@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T17:06:44+01:00",
+  "updatedAt": "2026-11-19T17:12:49+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Three fight strikes",
-    "completed": 1,
-    "total": 3,
-    "unit": "shots",
+    "label": "Thunder kick · original",
+    "completed": 11,
+    "total": 23,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking the space around Jack while keeping his reactions on the same beats."
+    "detail": "Measuring the gap to Jack and his cloak."
   },
   "milestones": [
     {
