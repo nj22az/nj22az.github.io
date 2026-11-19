@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T02:14:37+01:00",
+  "updatedAt": "2026-11-19T09:42:34+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -88,19 +88,19 @@
         },
         {
           "title": "Heart, hip and collar gestures",
-          "state": "needs-work",
-          "detail": "The contact trial reached the intended marks but reintroduced forearm clipping.",
+          "state": "checking",
+          "detail": "The approved heart, hip and collar poses are installed. Two wrist turns are eased. Lizzie’s air kiss is now an outward wave.",
           "steps": [
             {
-              "title": "Measure where the three gestures miss",
+              "title": "Install the approved touch poses",
               "verified": true
             },
             {
-              "title": "Reach the heart, hip and collar without clipping",
-              "verified": false
+              "title": "Ease the two wrist turns and install the wave",
+              "verified": true
             },
             {
-              "title": "Check the gestures in the edited shots",
+              "title": "Check the delivered poses and watch the singer cuts",
               "verified": false
             }
           ]
@@ -126,23 +126,23 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "checking",
-          "detail": "The closing chorus fix is installed. A closer glove fit is being checked in the hat scene. The posy trial cleared the bouquet but failed the hand-overlap check.",
+          "state": "queued",
+          "detail": "The closing chorus correction is installed. Thuận’s brighter violet bouquet and Lizzie’s crown grip are queued for their own checks.",
           "steps": [
             {
               "title": "Install the checked closing chorus arm pose",
               "verified": true
             },
             {
-              "title": "Clear the posy handover",
+              "title": "Verify the violet bouquet and keep the faces in view",
               "verified": false
             },
             {
-              "title": "Fit both hat grips",
+              "title": "Check Lizzie’s grip on the top of the hat",
               "verified": false
             },
             {
-              "title": "Clear the remaining visible stage overlaps",
+              "title": "Review the changed stage moments in motion",
               "verified": false
             }
           ]
@@ -174,38 +174,38 @@
         },
         {
           "title": "Shoes and sole shape",
-          "state": "needs-work",
-          "detail": "The black finish is approved. The latest shaped shoe trial still showed toe and sole faults, so it is awaiting refinement.",
+          "state": "checking",
+          "detail": "Thuận keeps the approved black shoes. The supporting-foot checks remain open.",
           "steps": [
             {
-              "title": "Approve the black finish",
+              "title": "Keep the approved black finish",
               "verified": true
             },
             {
-              "title": "Finish a flat sole with a continuous toe shape",
+              "title": "Measure the visible supporting soles",
               "verified": false
             },
             {
-              "title": "Check planted and lifted feet in motion",
+              "title": "Check planted feet through the cut",
               "verified": false
             }
           ]
         },
         {
           "title": "Folded arms",
-          "state": "needs-work",
-          "detail": "The new route reduced clipping. The forearms and hands still need to clear the jacket and sleeves.",
+          "state": "checking",
+          "detail": "Thuận waits with her hands behind her back. The first check cleared 13 visible overlaps in that shot. Her dusting gesture is a separate trial.",
           "steps": [
             {
-              "title": "Measure the jacket and sleeve intersections",
+              "title": "Clear the waiting pose",
               "verified": true
             },
             {
-              "title": "Clear both forearms in the folded poses",
+              "title": "Check the waist-level palm brushes",
               "verified": false
             },
             {
-              "title": "Check the revised poses in motion",
+              "title": "Watch both gestures in the edit",
               "verified": false
             }
           ]
@@ -231,23 +231,23 @@
         },
         {
           "title": "Fight contacts and planted steps",
-          "state": "needs-work",
-          "detail": "Check the blows, the cloak, and the shorter reach across the full fight.",
+          "state": "queued",
+          "detail": "Thuận’s upright retreat has its own shot check. Three accents keep held contact with Jack’s coat. The other blows use a clear miss or a cut.",
           "steps": [
             {
-              "title": "Measure reach, contact and footing on b6",
-              "verified": true
-            },
-            {
-              "title": "Correct contact and clear the cloak",
+              "title": "Verify the upright retreat and its revised cut",
               "verified": false
             },
             {
-              "title": "Pin supporting feet",
+              "title": "Verify the three held contacts",
               "verified": false
             },
             {
-              "title": "Review the full sequence in motion",
+              "title": "Check the supporting steps and joint transitions",
+              "verified": false
+            },
+            {
+              "title": "Watch the fight in motion",
               "verified": false
             }
           ]
@@ -279,34 +279,34 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "needs-work",
-          "detail": "All six faces read in the tighter row trial. The shoulder contacts still fail their fit check.",
+          "state": "queued",
+          "detail": "The six dancers will stand in one row with extra space between them. The shot check follows all six faces through the kick.",
           "steps": [
             {
-              "title": "Confirm all six faces are visible in the row trial",
+              "title": "Set the six-person formation and camera",
               "verified": true
             },
             {
-              "title": "Check framing with the accepted shoulder links",
+              "title": "Check that all six faces read in the revised shot",
               "verified": false
             }
           ]
         },
         {
-          "title": "Join hands to shoulders",
-          "state": "needs-work",
-          "detail": "Two links passed the eight-picture trial. The revised fit checks the two remaining links and keeps Polly’s free arm clear.",
+          "title": "Separate the finale arm poses",
+          "state": "queued",
+          "detail": "The new trial spaces six dancers in one row and gives each dancer her own arm pose. Lizzie takes one step forward.",
           "steps": [
             {
-              "title": "Clear glove and sleeve overlaps",
+              "title": "Prepare the unlinked six-person formation",
+              "verified": true
+            },
+            {
+              "title": "Pass the clearance and arm-length checks",
               "verified": false
             },
             {
-              "title": "Close the shoulder gaps without stretching",
-              "verified": false
-            },
-            {
-              "title": "Check all finale pictures and watch the shot in motion",
+              "title": "Watch the full kickline together",
               "verified": false
             }
           ]
@@ -320,7 +320,7 @@
         {
           "title": "Verify the fixes across the whole cut",
           "state": "queued",
-          "detail": "Review the changed shots in motion and confirm the remaining faults are cleared.",
+          "detail": "The final whole-cut check follows the remaining shot checks. It covers the revised cut and singer overlays.",
           "steps": [
             {
               "title": "Pass the stage-footing regression",
@@ -342,22 +342,34 @@
         },
         {
           "title": "Render and assemble the release candidate",
-          "state": "queued",
-          "detail": "The full 2:55 cut is prepared. Rendering starts after the fixes pass.",
+          "state": "checking",
+          "detail": "All 112 background images are verified. The clean cast pass renders 1,281 pictures across 28 cut rows.",
           "steps": [
             {
               "title": "Prepare the 4,208-frame render plan",
               "verified": true
             },
             {
-              "title": "Lock the verified revision and render the full cut",
+              "title": "Render and verify all background plates",
+              "verified": true
+            },
+            {
+              "title": "Render and verify the 28 clean foreground rows",
               "verified": false
             },
             {
-              "title": "Assemble the cut with the song",
+              "title": "Render the remaining shots and assemble the cut with the song",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Clean cast pass",
+            "completed": 1135,
+            "total": 1281,
+            "unit": "pictures",
+            "state": "rendering",
+            "detail": "Blender is rendering Lizzie’s singer shots. The finale trial is next in the queue."
+          }
         },
         {
           "title": "Review the finished movie",
@@ -376,5 +388,13 @@
         }
       ]
     }
-  ]
+  ],
+  "activeRender": {
+    "label": "Clean cast pass",
+    "completed": 1135,
+    "total": 1281,
+    "unit": "pictures",
+    "state": "rendering",
+    "detail": "Blender is rendering Lizzie’s singer shots. The finale trial is next in the queue."
+  }
 }

@@ -3,6 +3,7 @@
 const checklist = document.querySelector("#status-checklist");
 const overall = document.querySelector("#status-overall");
 const count = document.querySelector("#status-count");
+const activeRender = document.querySelector("#status-active-render");
 const update = document.querySelector("#status-update");
 const states = {
   verified: "Verified",
@@ -10,14 +11,22 @@ const states = {
   "needs-work": "Needs repair",
   queued: "Queued"
 };
+const renderStates = {
+  rendering: "Rendering",
+  verifying: "Verifying",
+  verified: "Verified",
+  blocked: "Blocked"
+};
 const formatter = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "medium",
   timeStyle: "short",
   timeZone: "Europe/Stockholm"
 });
+const wholeNumber = new Intl.NumberFormat("en-GB");
 let previousPayload;
 let publishedTime;
 let refreshing = false;
+let updateMessage;
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -36,6 +45,26 @@ function progressBar(label, verified, total) {
   bar.value = verified;
   bar.setAttribute("aria-label", label);
   return bar;
+}
+
+function renderMeasurement(data, inItem = false) {
+  if (!data) return null;
+  const {label, completed, total, unit, state, detail} = data;
+  if (typeof label !== "string" || !label.trim() || typeof unit !== "string" || !unit.trim() ||
+      !Object.hasOwn(renderStates, state) || !Number.isSafeInteger(completed) ||
+      !Number.isSafeInteger(total) || total <= 0 || completed < 0 || completed > total) return null;
+
+  const block = element(inItem ? "div" : "section", "status-render");
+  if (inItem) block.classList.add("status-render--item");
+  const heading = element("div", "status-render-heading");
+  const amount = `${wholeNumber.format(completed)} of ${wholeNumber.format(total)} ${unit}`;
+  heading.append(element(inItem ? "strong" : "h3", "status-render-title", label),
+                 element("span", "status-render-count", `${renderStates[state]} · ${amount}`));
+  const meter = progressBar(label, completed, total);
+  meter.setAttribute("aria-valuetext", amount);
+  block.append(heading, meter);
+  if (typeof detail === "string" && detail.trim()) block.append(element("p", "status-render-detail", detail));
+  return block;
 }
 
 function renderSteps(item, key, expanded) {
@@ -84,17 +113,32 @@ function renderGroup(group, expanded) {
     const state = element("span", "status-item-state", states[item.state]);
     state.dataset.state = item.state;
     title.append(element("strong", "", item.title), state);
-    row.append(title, element("p", "", item.detail), renderSteps(item, `item:${group.id}:${item.title}`, expanded));
+    row.append(title, element("p", "", item.detail));
+    const measured = renderMeasurement(item.progress, true);
+    if (measured) row.append(measured);
+    row.append(renderSteps(item, `item:${group.id}:${item.title}`, expanded));
     items.append(row);
   }
   details.append(summary, bar, items);
   return details;
 }
 
-function showUpdatedAt() {
-  const time = element("time", "", formatter.format(new Date(publishedTime)));
+function showUpdatedAt(retrying = false) {
+  const timestamp = Date.parse(publishedTime);
+  const stale = Number.isFinite(timestamp) && Date.now() - timestamp > 10 * 60_000;
+  const message = `${publishedTime}|${stale}|${retrying}`;
+  if (message === updateMessage) return;
+  updateMessage = message;
+  if (!Number.isFinite(timestamp)) {
+    update.textContent = retrying ? "The checklist is temporarily unavailable. Checking again in a minute."
+      : "Publication time is unavailable.";
+    return;
+  }
+  const time = element("time", "", formatter.format(timestamp));
   time.dateTime = publishedTime;
-  update.replaceChildren("Updated ", time, " Stockholm time. This page refreshes every minute.");
+  update.replaceChildren("Last published ", time, " Stockholm time.");
+  if (stale) update.append(" ", element("strong", "", "This snapshot is over 10 minutes old."));
+  if (retrying) update.append(" Could not check for a newer snapshot.");
 }
 
 function render(data) {
@@ -107,6 +151,9 @@ function render(data) {
   overall.value = verified;
   overall.hidden = false;
   count.textContent = `${verified} of ${allItems.length} milestones verified`;
+  const measured = renderMeasurement(data.activeRender);
+  activeRender.replaceChildren(...(measured ? [measured] : []));
+  activeRender.hidden = !measured;
   checklist.replaceChildren(...data.groups.map(group => renderGroup(group, expanded)));
   checklist.setAttribute("aria-busy", "false");
   if (focusedKey) {
@@ -114,7 +161,6 @@ function render(data) {
       ?.querySelector("summary").focus({preventScroll: true});
   }
   publishedTime = data.updatedAt;
-  showUpdatedAt();
 }
 
 async function refresh() {
@@ -129,15 +175,10 @@ async function refresh() {
     if (payload !== previousPayload) {
       render(JSON.parse(payload));
       previousPayload = payload;
-    } else if (update.dataset.retry === "true") {
-      showUpdatedAt();
     }
-    delete update.dataset.retry;
+    showUpdatedAt();
   } catch {
-    update.dataset.retry = "true";
-    update.textContent = publishedTime
-      ? `Showing the update from ${formatter.format(new Date(publishedTime))} Stockholm time. Reconnecting…`
-      : "The checklist is temporarily unavailable. This page will retry in a minute.";
+    showUpdatedAt(true);
     checklist.setAttribute("aria-busy", "false");
   } finally {
     refreshing = false;

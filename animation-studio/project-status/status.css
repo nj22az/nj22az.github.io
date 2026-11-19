@@ -69,6 +69,26 @@
 .status-update,
 .status-item p { color: var(--studio-muted); font-size: .9rem; }
 
+.status-render {
+  border-top: 1px solid var(--studio-line);
+  margin-block: 16px;
+  padding-top: 14px;
+}
+
+.status-render-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.status-render-title { font-size: 1rem; font-weight: 650; }
+.status-render-count { color: var(--studio-muted); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.status-render .status-render-detail { color: var(--studio-muted); font-size: .9rem; }
+.status-render--item { margin-block: 10px; padding-top: 0; border: 0; }
+.status-render--item > progress { height: .3rem; margin-block: 6px; }
+
 .status-checklist {
   display: grid;
   gap: 12px;
