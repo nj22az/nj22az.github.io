@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T19:28:41+01:00",
+  "updatedAt": "2026-11-19T19:29:45+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -143,12 +143,12 @@
             }
           ],
           "progress": {
-            "label": "Thuận’s violet bouquet",
-            "completed": 1,
-            "total": 2,
-            "unit": "checks",
+            "label": "Thuận’s violet bouquet · original",
+            "completed": 21,
+            "total": 36,
+            "unit": "pictures",
             "state": "verifying",
-            "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
+            "detail": "Checking the right-hand grip, the closing crop and the two glove readings."
           }
         }
       ]
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Thuận’s violet bouquet",
-    "completed": 1,
-    "total": 2,
-    "unit": "checks",
+    "label": "Thuận’s violet bouquet · original",
+    "completed": 21,
+    "total": 36,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
+    "detail": "Checking the right-hand grip, the closing crop and the two glove readings."
   },
   "milestones": [
     {
