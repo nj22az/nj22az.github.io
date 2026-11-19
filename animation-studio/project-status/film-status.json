@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:50:59+01:00",
+  "updatedAt": "2026-11-19T14:52:03+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "First kick cloak contact",
-    "completed": 0,
-    "total": 0,
-    "unit": "",
+    "label": "First kick cloak contact · original pose",
+    "completed": 51,
+    "total": 51,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checked at least 55,000 placements for a reachable contact in both pictures."
+    "detail": "Measuring the original shot."
   },
   "milestones": [
     {
