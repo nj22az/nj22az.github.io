@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T13:32:24+01:00",
+  "updatedAt": "2026-11-19T13:35:28+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,7 +391,7 @@
   ],
   "activeRender": {
     "label": "Thunder cloak contact · original pose",
-    "completed": 9,
+    "completed": 23,
     "total": 23,
     "unit": "pictures",
     "state": "verifying",
