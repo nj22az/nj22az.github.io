@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T15:15:53+01:00",
+  "updatedAt": "2026-11-19T15:27:00+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,11 +391,11 @@
   ],
   "activeRender": {
     "label": "Toe-kick clearance",
-    "completed": 0,
+    "completed": 1,
     "total": 2,
     "unit": "checks",
     "state": "verifying",
-    "detail": "Checking the original shot before testing the change."
+    "detail": "Checking the new pose clears Jack with the reaction on the same beat."
   },
   "milestones": [
     {
