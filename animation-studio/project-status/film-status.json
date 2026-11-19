@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T17:42:43+01:00",
+  "updatedAt": "2026-11-19T17:54:58+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -144,7 +144,7 @@
           ],
           "progress": {
             "label": "Thuận’s violet bouquet",
-            "completed": 0,
+            "completed": 1,
             "total": 2,
             "unit": "checks",
             "state": "verifying",
@@ -391,7 +391,7 @@
   ],
   "activeRender": {
     "label": "Thuận’s violet bouquet",
-    "completed": 0,
+    "completed": 1,
     "total": 2,
     "unit": "checks",
     "state": "verifying",
