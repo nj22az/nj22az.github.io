@@ -1,23 +1,7 @@
 .project-status {
   max-width: 900px;
-  padding-block: clamp(18px, 4vw, 48px);
-}
-
-.status-heading {
-  margin-bottom: clamp(16px, 3vw, 28px);
-}
-
-.status-back {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  color: var(--studio-muted);
-}
-
-.status-heading h1 {
-  font-size: clamp(1.9rem, 5vw, 3.2rem);
-  letter-spacing: -.035em;
-  line-height: 1.08;
+  padding-block: calc(var(--family-header) + clamp(14px, 3vw, 35px)) clamp(18px, 4vw, 48px);
+  scroll-margin-top: var(--family-header);
 }
 
 .status-overview,
@@ -43,7 +27,7 @@
   gap: 4px 16px;
 }
 
-.status-overview h2 {
+.status-overview h1 {
   font-size: clamp(1.5rem, 3.8vw, 2.3rem);
   letter-spacing: -.025em;
   line-height: 1.15;
@@ -85,13 +69,13 @@
   padding-top: 14px;
 }
 
-.status-active-job h3,
-.status-milestones h3 {
+.status-active-job h2,
+.status-milestones h2 {
   font-size: 1.15rem;
   line-height: 1.25;
 }
 
-.status-active-job h3 { margin-bottom: 8px; }
+.status-active-job h2 { margin-bottom: 8px; }
 
 .status-render-heading {
   display: flex;
