@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T12:01:13+01:00",
+  "updatedAt": "2026-11-19T12:03:17+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "checking",
+          "state": "queued",
           "detail": "The closing chorus correction is installed. Thuận’s brighter violet bouquet and Lizzie’s crown grip are queued for their own checks.",
           "steps": [
             {
@@ -145,15 +145,7 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ],
-          "progress": {
-            "label": "Violet bouquet shot check",
-            "completed": 4,
-            "total": 36,
-            "unit": "pictures",
-            "state": "verifying",
-            "detail": "Checking Thuận’s grip and all three faces."
-          }
+          ]
         }
       ]
     },
@@ -398,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Violet bouquet shot check",
-    "completed": 4,
-    "total": 36,
+    "label": "Thuận’s upright retreat",
+    "completed": 0,
+    "total": 50,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking Thuận’s grip and all three faces."
+    "detail": "Blender is loading the shot for the visibility and motion check."
   },
   "milestones": [
     {
