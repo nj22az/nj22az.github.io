@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T18:55:15+01:00",
+  "updatedAt": "2026-11-19T19:02:26+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -223,7 +223,7 @@
         },
         {
           "title": "Fight contacts and planted steps",
-          "state": "checking",
+          "state": "queued",
           "detail": "The upright retreat is rendered. The three strike checks kept the originals under the director’s rule.",
           "steps": [
             {
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "River fight clearance",
-    "completed": 2,
-    "total": 3,
-    "unit": "checks",
-    "state": "verifying",
-    "detail": "Checking the simpler staging and preserving the reaction timing."
+    "label": "Clean cast pass",
+    "completed": 1281,
+    "total": 1281,
+    "unit": "pictures",
+    "state": "verified",
+    "detail": "The clean cast pass is verified. Current job · Note 008 exact edge-depth verification of the fixed bouquet pose"
   },
   "milestones": [
     {
