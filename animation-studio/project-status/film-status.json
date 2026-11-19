@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T17:59:05+01:00",
+  "updatedAt": "2026-11-19T18:00:10+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "checking",
+          "state": "queued",
           "detail": "Thuận holds the violets below her chin so the flowers, ribbon and her grip read in the shot.",
           "steps": [
             {
@@ -141,15 +141,7 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ],
-          "progress": {
-            "label": "Thuận’s violet bouquet",
-            "completed": 2,
-            "total": 2,
-            "unit": "checks",
-            "state": "verifying",
-            "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
-          }
+          ]
         }
       ]
     },
@@ -279,7 +271,7 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "queued",
+          "state": "checking",
           "detail": "The five-dancer finale check follows every face and the space around the two dancers on the left.",
           "steps": [
             {
@@ -294,7 +286,7 @@
         },
         {
           "title": "Separate the finale arm poses",
-          "state": "queued",
+          "state": "checking",
           "detail": "The finale check gives each of the five dancers her own arm pose while keeping the kicks together.",
           "steps": [
             {
@@ -309,7 +301,15 @@
               "title": "Watch the full kickline together",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Finale · fitting the fists",
+            "completed": 0,
+            "total": 79,
+            "unit": "pictures",
+            "state": "verifying",
+            "detail": "Fitting the knuckles just off the costumes before checking each picture."
+          }
         }
       ]
     },
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Thuận’s violet bouquet",
-    "completed": 2,
-    "total": 2,
-    "unit": "checks",
+    "label": "Finale · fitting the fists",
+    "completed": 0,
+    "total": 79,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
+    "detail": "Fitting the knuckles just off the costumes before checking each picture."
   },
   "milestones": [
     {
