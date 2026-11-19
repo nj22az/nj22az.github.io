@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T13:16:09+01:00",
+  "updatedAt": "2026-11-19T13:19:13+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,7 +391,7 @@
   ],
   "activeRender": {
     "label": "Thuận’s upright retreat · changed pose",
-    "completed": 1,
+    "completed": 49,
     "total": 50,
     "unit": "pictures",
     "state": "verifying",
