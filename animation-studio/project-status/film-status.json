@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T19:33:57+01:00",
+  "updatedAt": "2026-11-19T19:35:06+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -127,7 +127,7 @@
         {
           "title": "Stage numbers and props",
           "state": "checking",
-          "detail": "Checking the right-hand grip below Thuận’s chin and keeping Lizzie’s left arm lowered.",
+          "detail": "The checked right-hand violet grip is installed.",
           "steps": [
             {
               "title": "Install the checked closing chorus arm pose",
@@ -135,21 +135,13 @@
             },
             {
               "title": "Verify the violet bouquet and keep the faces in view",
-              "verified": false
+              "verified": true
             },
             {
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ],
-          "progress": {
-            "label": "Thuận’s violet bouquet · revised grip",
-            "completed": 36,
-            "total": 36,
-            "unit": "pictures",
-            "state": "verifying",
-            "detail": "Checking the right-hand grip, the closing crop and the two glove readings."
-          }
+          ]
         }
       ]
     },
@@ -390,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Thuận’s violet bouquet · revised grip",
-    "completed": 36,
+    "label": "s66_won",
+    "completed": 0,
     "total": 36,
     "unit": "pictures",
-    "state": "verifying",
-    "detail": "Checking the right-hand grip, the closing crop and the two glove readings."
+    "state": "rendering",
+    "detail": "Blender is rendering the foreground for a checked shot."
   },
   "milestones": [
     {
@@ -411,7 +403,7 @@
       "completed": 1331,
       "total": 2715,
       "unit": "source frames",
-      "state": "waiting",
+      "state": "rendering",
       "detail": "Verified frames are ready for the edit. Remaining shots are checked before rendering."
     },
     {
