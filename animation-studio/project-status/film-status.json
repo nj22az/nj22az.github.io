@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T15:11:32+01:00",
+  "updatedAt": "2026-11-19T15:12:36+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Blender speed and picture check",
-    "completed": 3,
-    "total": 4,
-    "unit": "checks",
-    "state": "verifying",
-    "detail": "Timing the same foreground picture on Metal when the GPU slot is available."
+    "label": "Clean cast pass",
+    "completed": 1281,
+    "total": 1281,
+    "unit": "pictures",
+    "state": "verified",
+    "detail": "The clean cast pass is verified. Current job · decision 5: s41 clear toe miss on the original beat"
   },
   "milestones": [
     {
