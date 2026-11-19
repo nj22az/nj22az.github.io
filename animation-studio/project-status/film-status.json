@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T23:16:03+01:00",
+  "updatedAt": "2026-11-19T23:28:35+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Note 008 render remaining character pictures",
-    "completed": 1104,
-    "total": 1348,
-    "unit": "pictures",
+    "label": "Assembling the complete film",
+    "completed": 0,
+    "total": 0,
+    "unit": "",
     "state": "rendering",
-    "detail": "Blender is rendering the foreground for a checked shot."
+    "detail": "Remotion is combining the verified pictures with the song."
   },
   "milestones": [
     {
@@ -400,11 +400,11 @@
     },
     {
       "title": "Cast and character renders",
-      "completed": 1367,
+      "completed": 2715,
       "total": 2715,
       "unit": "source frames",
-      "state": "rendering",
-      "detail": "Verified frames are ready for the edit. Remaining shots are checked before rendering."
+      "state": "verified",
+      "detail": "All verified foreground frames are ready."
     },
     {
       "title": "Whole-film checks",
@@ -419,9 +419,9 @@
       "completed": 0,
       "total": 0,
       "unit": "",
-      "state": "waiting",
+      "state": "rendering",
       "detail": "The full edit, sound and playback review follow."
     }
   ],
-  "lastVerifiedAt": "2026-11-19T19:49:04+01:00"
+  "lastVerifiedAt": "2026-11-19T23:27:33+01:00"
 }
