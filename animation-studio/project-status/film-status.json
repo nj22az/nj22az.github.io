@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:14:00+01:00",
+  "updatedAt": "2026-11-19T11:24:54+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,11 +391,11 @@
   ],
   "activeRender": {
     "label": "Grief close-up",
-    "completed": 0,
+    "completed": 1,
     "total": 1,
     "unit": "held picture",
-    "state": "rendering",
-    "detail": "Rendering the held close-up with a softer expression."
+    "state": "verifying",
+    "detail": "Checking the one corrected expression in the edit."
   },
   "milestones": [
     {
