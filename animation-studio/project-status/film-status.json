@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T18:28:38+01:00",
+  "updatedAt": "2026-11-19T18:31:47+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "checking",
+          "state": "queued",
           "detail": "Checking the right-hand grip below Thuận’s chin and keeping Lizzie’s left arm lowered.",
           "steps": [
             {
@@ -141,15 +141,7 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ],
-          "progress": {
-            "label": "Thuận’s violet bouquet · revised grip",
-            "completed": 1,
-            "total": 36,
-            "unit": "pictures",
-            "state": "verifying",
-            "detail": "Checking the right-hand grip, the closing crop and the two glove readings."
-          }
+          ]
         }
       ]
     },
@@ -231,7 +223,7 @@
         },
         {
           "title": "Fight contacts and planted steps",
-          "state": "queued",
+          "state": "checking",
           "detail": "The upright retreat is rendered. The three strike checks kept the originals under the director’s rule.",
           "steps": [
             {
@@ -390,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Thuận’s violet bouquet · revised grip",
-    "completed": 1,
-    "total": 36,
-    "unit": "pictures",
+    "label": "River fight clearance",
+    "completed": 0,
+    "total": 2,
+    "unit": "checks",
     "state": "verifying",
-    "detail": "Checking the right-hand grip, the closing crop and the two glove readings."
+    "detail": "Checking the original shot before testing the change."
   },
   "milestones": [
     {
