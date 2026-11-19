@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:59:08+01:00",
+  "updatedAt": "2026-11-19T12:01:13+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -148,11 +148,11 @@
           ],
           "progress": {
             "label": "Violet bouquet shot check",
-            "completed": 3,
+            "completed": 4,
             "total": 36,
             "unit": "pictures",
             "state": "verifying",
-            "detail": "Measuring the original shot."
+            "detail": "Checking Thuận’s grip and all three faces."
           }
         }
       ]
@@ -399,11 +399,11 @@
   ],
   "activeRender": {
     "label": "Violet bouquet shot check",
-    "completed": 3,
+    "completed": 4,
     "total": 36,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Measuring the original shot."
+    "detail": "Checking Thuận’s grip and all three faces."
   },
   "milestones": [
     {
