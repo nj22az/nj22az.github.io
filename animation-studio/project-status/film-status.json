@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T21:43:08+01:00",
+  "updatedAt": "2026-11-19T21:44:12+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Clean cast pass",
-    "completed": 1281,
-    "total": 1281,
-    "unit": "pictures",
-    "state": "verified",
-    "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
+    "label": "Final matching backgrounds",
+    "completed": 0,
+    "total": 2,
+    "unit": "shots",
+    "state": "rendering",
+    "detail": "Rendering the backgrounds that need to match the revised foreground."
   },
   "milestones": [
     {
