@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T15:35:05+01:00",
+  "updatedAt": "2026-11-19T15:38:22+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -127,7 +127,7 @@
         {
           "title": "Stage numbers and props",
           "state": "queued",
-          "detail": "The closing chorus correction is installed. Thuận’s brighter violet bouquet and Lizzie’s crown grip are queued for their own checks.",
+          "detail": "Thuận holds the violets below her chin so the flowers, ribbon and her grip read in the shot.",
           "steps": [
             {
               "title": "Install the checked closing chorus arm pose",
@@ -135,10 +135,6 @@
             },
             {
               "title": "Verify the violet bouquet and keep the faces in view",
-              "verified": false
-            },
-            {
-              "title": "Check Lizzie’s grip on the top of the hat",
               "verified": false
             },
             {
@@ -194,15 +190,11 @@
         {
           "title": "Folded arms",
           "state": "checking",
-          "detail": "Thuận waits with her hands behind her back. The first check cleared 13 visible overlaps in that shot. Her dusting gesture is a separate trial.",
+          "detail": "Thuận waits with her hands behind her back. The first check cleared 13 visible overlaps in that shot. The final cut check will cover the delivered gesture.",
           "steps": [
             {
               "title": "Clear the waiting pose",
               "verified": true
-            },
-            {
-              "title": "Check the waist-level palm brushes",
-              "verified": false
             },
             {
               "title": "Watch both gestures in the edit",
@@ -232,14 +224,14 @@
         {
           "title": "Fight contacts and planted steps",
           "state": "checking",
-          "detail": "Thuận’s upright retreat has its own shot check. Three accents keep held contact with Jack’s coat. The other blows use a clear miss or a cut.",
+          "detail": "The director approved the upright retreat. The three strikes can miss Jack, with his reactions kept on the original beats.",
           "steps": [
             {
               "title": "Verify the upright retreat and its revised cut",
               "verified": false
             },
             {
-              "title": "Verify the three held contacts",
+              "title": "Decide all three strikes",
               "verified": false
             },
             {
@@ -280,14 +272,14 @@
         {
           "title": "Make the chorus readable",
           "state": "queued",
-          "detail": "The six dancers will stand in one row with extra space between them. The shot check follows all six faces through the kick.",
+          "detail": "The five-dancer finale check follows every face and the space around the two dancers on the left.",
           "steps": [
             {
-              "title": "Set the six-person formation and camera",
+              "title": "Set the five-person formation and camera",
               "verified": true
             },
             {
-              "title": "Check that all six faces read in the revised shot",
+              "title": "Check every face in the revised shot",
               "verified": false
             }
           ]
@@ -295,10 +287,10 @@
         {
           "title": "Separate the finale arm poses",
           "state": "queued",
-          "detail": "The new trial spaces six dancers in one row and gives each dancer her own arm pose. Lizzie takes one step forward.",
+          "detail": "The finale check gives each of the five dancers her own arm pose while keeping the kicks together.",
           "steps": [
             {
-              "title": "Prepare the unlinked six-person formation",
+              "title": "Prepare the five-person formation",
               "verified": true
             },
             {
