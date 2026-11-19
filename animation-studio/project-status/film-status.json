@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T17:39:39+01:00",
+  "updatedAt": "2026-11-19T17:42:43+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "queued",
+          "state": "checking",
           "detail": "Thuận holds the violets below her chin so the flowers, ribbon and her grip read in the shot.",
           "steps": [
             {
@@ -141,7 +141,15 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Thuận’s violet bouquet",
+            "completed": 0,
+            "total": 2,
+            "unit": "checks",
+            "state": "verifying",
+            "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
+          }
         }
       ]
     },
@@ -382,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Note 008 approved first-eased retreat foreground",
-    "completed": 11,
-    "total": 50,
-    "unit": "pictures",
-    "state": "rendering",
-    "detail": "Blender is rendering the foreground for a checked shot."
+    "label": "Thuận’s violet bouquet",
+    "completed": 0,
+    "total": 2,
+    "unit": "checks",
+    "state": "verifying",
+    "detail": "Checking that the flowers, ribbon and her hand are visible and Lizzie’s arm hangs freely."
   },
   "milestones": [
     {
@@ -400,10 +408,10 @@
     },
     {
       "title": "Cast and character renders",
-      "completed": 1281,
+      "completed": 1331,
       "total": 2715,
       "unit": "source frames",
-      "state": "rendering",
+      "state": "waiting",
       "detail": "Verified frames are ready for the edit. Remaining shots are checked before rendering."
     },
     {
@@ -423,5 +431,5 @@
       "detail": "The full edit, sound and playback review follow."
     }
   ],
-  "lastVerifiedAt": "2026-11-19T11:25:13+01:00"
+  "lastVerifiedAt": "2026-11-19T17:42:35+01:00"
 }
