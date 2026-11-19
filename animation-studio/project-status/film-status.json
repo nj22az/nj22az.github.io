@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:49:56+01:00",
+  "updatedAt": "2026-11-19T14:50:59+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -395,7 +395,7 @@
     "total": 0,
     "unit": "",
     "state": "verifying",
-    "detail": "Checked at least 35,000 placements for a reachable contact in both pictures."
+    "detail": "Checked at least 55,000 placements for a reachable contact in both pictures."
   },
   "milestones": [
     {
