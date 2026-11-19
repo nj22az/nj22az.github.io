@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T16:25:36+01:00",
+  "updatedAt": "2026-11-19T16:48:13+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "First kick · fitting the miss",
-    "completed": 0,
-    "total": 0,
-    "unit": "",
+    "label": "First kick · clear miss",
+    "completed": 2,
+    "total": 51,
+    "unit": "pictures",
     "state": "verifying",
-    "detail": "Finding a reachable pose that clears the cloak on the same beat."
+    "detail": "Measuring the gap to Jack and his cloak."
   },
   "milestones": [
     {
