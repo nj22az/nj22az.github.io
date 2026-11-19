@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:25:57+01:00",
+  "updatedAt": "2026-11-19T11:27:00+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -126,7 +126,7 @@
         },
         {
           "title": "Stage numbers and props",
-          "state": "checking",
+          "state": "queued",
           "detail": "The closing chorus correction is installed. Thuận’s brighter violet bouquet and Lizzie’s crown grip are queued for their own checks.",
           "steps": [
             {
@@ -145,15 +145,7 @@
               "title": "Review the changed stage moments in motion",
               "verified": false
             }
-          ],
-          "progress": {
-            "label": "Violet bouquet shot check",
-            "completed": 0,
-            "total": 36,
-            "unit": "pictures",
-            "state": "verifying",
-            "detail": "Blender is loading the cast for the bouquet shot."
-          }
+          ]
         }
       ]
     },
@@ -287,7 +279,7 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "queued",
+          "state": "checking",
           "detail": "The six dancers will stand in one row with extra space between them. The shot check follows all six faces through the kick.",
           "steps": [
             {
@@ -302,7 +294,7 @@
         },
         {
           "title": "Separate the finale arm poses",
-          "state": "queued",
+          "state": "checking",
           "detail": "The new trial spaces six dancers in one row and gives each dancer her own arm pose. Lizzie takes one step forward.",
           "steps": [
             {
@@ -317,7 +309,15 @@
               "title": "Watch the full kickline together",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Finale spacing around Polly",
+            "completed": 0,
+            "total": 79,
+            "unit": "pictures",
+            "state": "verifying",
+            "detail": "Checking the wider spacing beside Polly and whether the dancers fit the frame."
+          }
         }
       ]
     },
@@ -376,7 +376,7 @@
             "total": 1281,
             "unit": "pictures",
             "state": "verified",
-            "detail": "The 28 clean cut rows passed their foreground file check. Blender is now checking the violet bouquet shot."
+            "detail": "The 28 clean cut rows passed their foreground file check. Blender is now checking the unlinked finale."
           }
         },
         {
@@ -398,12 +398,12 @@
     }
   ],
   "activeRender": {
-    "label": "Violet bouquet shot check",
+    "label": "Finale spacing around Polly",
     "completed": 0,
-    "total": 36,
+    "total": 79,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Blender is loading the cast for the bouquet shot."
+    "detail": "Checking the wider spacing beside Polly and whether the dancers fit the frame."
   },
   "milestones": [
     {
