@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:59:21+01:00",
+  "updatedAt": "2026-11-19T15:11:32+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -391,11 +391,11 @@
   ],
   "activeRender": {
     "label": "Blender speed and picture check",
-    "completed": 0,
+    "completed": 3,
     "total": 4,
     "unit": "checks",
     "state": "verifying",
-    "detail": "Loading the signed cast and cameras once for a repeated-picture comparison."
+    "detail": "Timing the same foreground picture on Metal when the GPU slot is available."
   },
   "milestones": [
     {
