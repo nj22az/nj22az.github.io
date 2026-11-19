@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:05:03+01:00",
+  "updatedAt": "2026-11-19T14:15:09+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -392,10 +392,10 @@
   "activeRender": {
     "label": "Thunder cloak contact",
     "completed": 0,
-    "total": 23,
-    "unit": "pictures",
+    "total": 0,
+    "unit": "",
     "state": "verifying",
-    "detail": "Blender is loading the shot for the visibility and motion check."
+    "detail": "Finding a reachable exterior cloak contact for both pictures."
   },
   "milestones": [
     {
