@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T10:46:58+01:00",
+  "updatedAt": "2026-11-19T10:50:01+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -311,12 +311,12 @@
             }
           ],
           "progress": {
-            "label": "Finale shot check · original pose",
-            "completed": 65,
+            "label": "Finale shot check · hands on hips",
+            "completed": 5,
             "total": 79,
             "unit": "pictures",
             "state": "verifying",
-            "detail": "Measuring the original shot."
+            "detail": "Measuring the new hands-on-hips formation."
           }
         }
       ]
@@ -398,12 +398,12 @@
     }
   ],
   "activeRender": {
-    "label": "Finale shot check · original pose",
-    "completed": 65,
+    "label": "Finale shot check · hands on hips",
+    "completed": 5,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Measuring the original shot."
+    "detail": "Measuring the new hands-on-hips formation."
   },
   "milestones": [
     {
