@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T17:24:12+01:00",
+  "updatedAt": "2026-11-19T17:25:16+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Flying heel · clear miss",
+    "label": "Three fight strikes",
     "completed": 3,
-    "total": 19,
-    "unit": "pictures",
+    "total": 3,
+    "unit": "shots",
     "state": "verifying",
-    "detail": "Measuring the gap to Jack and his cloak."
+    "detail": "Checking the space around Jack while keeping his reactions on the same beats."
   },
   "milestones": [
     {
