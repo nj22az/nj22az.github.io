@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:08:25+01:00",
+  "updatedAt": "2026-11-19T11:11:30+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -311,12 +311,12 @@
             }
           ],
           "progress": {
-            "label": "Finale shot check · lowered arms",
-            "completed": 35,
+            "label": "Finale shot check · original pose",
+            "completed": 0,
             "total": 79,
             "unit": "pictures",
             "state": "verifying",
-            "detail": "Measuring the lowered-arm option."
+            "detail": "Blender is preparing the six-dancer shot check."
           }
         }
       ]
@@ -398,12 +398,12 @@
     }
   ],
   "activeRender": {
-    "label": "Finale shot check · lowered arms",
-    "completed": 35,
+    "label": "Finale shot check · original pose",
+    "completed": 0,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Measuring the lowered-arm option."
+    "detail": "Blender is preparing the six-dancer shot check."
   },
   "milestones": [
     {
