@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T14:03:09+01:00",
+  "updatedAt": "2026-11-19T14:05:03+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -390,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Clean cast pass",
-    "completed": 1281,
-    "total": 1281,
+    "label": "Thunder cloak contact",
+    "completed": 0,
+    "total": 23,
     "unit": "pictures",
-    "state": "verified",
-    "detail": "The clean cast pass is verified. Current job · thunder: continue the exact contact search from its verified baseline"
+    "state": "verifying",
+    "detail": "Blender is loading the shot for the visibility and motion check."
   },
   "milestones": [
     {
