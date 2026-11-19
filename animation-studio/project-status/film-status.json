@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T19:30:50+01:00",
+  "updatedAt": "2026-11-19T19:33:57+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -144,7 +144,7 @@
           ],
           "progress": {
             "label": "Thuận’s violet bouquet · revised grip",
-            "completed": 5,
+            "completed": 36,
             "total": 36,
             "unit": "pictures",
             "state": "verifying",
@@ -391,7 +391,7 @@
   ],
   "activeRender": {
     "label": "Thuận’s violet bouquet · revised grip",
-    "completed": 5,
+    "completed": 36,
     "total": 36,
     "unit": "pictures",
     "state": "verifying",
