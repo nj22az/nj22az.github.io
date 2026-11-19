@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T19:29:45+01:00",
+  "updatedAt": "2026-11-19T19:30:50+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -143,8 +143,8 @@
             }
           ],
           "progress": {
-            "label": "Thuận’s violet bouquet · original",
-            "completed": 21,
+            "label": "Thuận’s violet bouquet · revised grip",
+            "completed": 5,
             "total": 36,
             "unit": "pictures",
             "state": "verifying",
@@ -390,8 +390,8 @@
     }
   ],
   "activeRender": {
-    "label": "Thuận’s violet bouquet · original",
-    "completed": 21,
+    "label": "Thuận’s violet bouquet · revised grip",
+    "completed": 5,
     "total": 36,
     "unit": "pictures",
     "state": "verifying",
