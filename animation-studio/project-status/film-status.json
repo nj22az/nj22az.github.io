@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:11:30+01:00",
+  "updatedAt": "2026-11-19T11:12:34+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -279,7 +279,7 @@
       "items": [
         {
           "title": "Make the chorus readable",
-          "state": "checking",
+          "state": "queued",
           "detail": "The six dancers will stand in one row with extra space between them. The shot check follows all six faces through the kick.",
           "steps": [
             {
@@ -294,7 +294,7 @@
         },
         {
           "title": "Separate the finale arm poses",
-          "state": "checking",
+          "state": "queued",
           "detail": "The new trial spaces six dancers in one row and gives each dancer her own arm pose. Lizzie takes one step forward.",
           "steps": [
             {
@@ -309,15 +309,7 @@
               "title": "Watch the full kickline together",
               "verified": false
             }
-          ],
-          "progress": {
-            "label": "Finale shot check · original pose",
-            "completed": 0,
-            "total": 79,
-            "unit": "pictures",
-            "state": "verifying",
-            "detail": "Blender is preparing the six-dancer shot check."
-          }
+          ]
         }
       ]
     },
@@ -376,7 +368,7 @@
             "total": 1281,
             "unit": "pictures",
             "state": "verified",
-            "detail": "The 28 clean cut rows passed their foreground file check. Blender is now checking the unlinked finale."
+            "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
           }
         },
         {
@@ -398,12 +390,12 @@
     }
   ],
   "activeRender": {
-    "label": "Finale shot check · original pose",
-    "completed": 0,
-    "total": 79,
+    "label": "Clean cast pass",
+    "completed": 1281,
+    "total": 1281,
     "unit": "pictures",
-    "state": "verifying",
-    "detail": "Blender is preparing the six-dancer shot check."
+    "state": "verified",
+    "detail": "The clean cast pass is verified. Current job · Note 006 grief face keys and one exact verifying still"
   },
   "milestones": [
     {
