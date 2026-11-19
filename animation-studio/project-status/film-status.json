@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T12:03:17+01:00",
+  "updatedAt": "2026-11-19T12:15:25+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -231,7 +231,7 @@
         },
         {
           "title": "Fight contacts and planted steps",
-          "state": "queued",
+          "state": "checking",
           "detail": "Thuận’s upright retreat has its own shot check. Three accents keep held contact with Jack’s coat. The other blows use a clear miss or a cut.",
           "steps": [
             {
@@ -390,9 +390,9 @@
     }
   ],
   "activeRender": {
-    "label": "Thuận’s upright retreat",
+    "label": "Thunder cloak contact",
     "completed": 0,
-    "total": 50,
+    "total": 23,
     "unit": "pictures",
     "state": "verifying",
     "detail": "Blender is loading the shot for the visibility and motion check."
