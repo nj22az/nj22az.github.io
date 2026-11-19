@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T09:46:52+01:00",
+  "updatedAt": "2026-11-19T10:02:36+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -309,7 +309,15 @@
               "title": "Watch the full kickline together",
               "verified": false
             }
-          ]
+          ],
+          "progress": {
+            "label": "Finale shot check · original pose",
+            "completed": 5,
+            "total": 79,
+            "unit": "pictures",
+            "state": "verifying",
+            "detail": "Measuring the original shot."
+          }
         }
       ]
     },
@@ -390,11 +398,11 @@
     }
   ],
   "activeRender": {
-    "label": "Finale shot check",
-    "completed": 0,
+    "label": "Finale shot check · original pose",
+    "completed": 5,
     "total": 79,
     "unit": "pictures",
     "state": "verifying",
-    "detail": "Blender is loading the cast for the six-dancer shot check."
+    "detail": "Measuring the original shot."
   }
 }
