@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T21:44:12+01:00",
+  "updatedAt": "2026-11-19T21:57:36+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Final matching backgrounds",
+    "label": "Note 008 render remaining character pictures",
     "completed": 0,
-    "total": 2,
-    "unit": "shots",
+    "total": 1348,
+    "unit": "pictures",
     "state": "rendering",
-    "detail": "Rendering the backgrounds that need to match the revised foreground."
+    "detail": "Blender is rendering the foreground for a checked shot."
   },
   "milestones": [
     {
@@ -403,7 +403,7 @@
       "completed": 1367,
       "total": 2715,
       "unit": "source frames",
-      "state": "waiting",
+      "state": "rendering",
       "detail": "Verified frames are ready for the edit. Remaining shots are checked before rendering."
     },
     {
