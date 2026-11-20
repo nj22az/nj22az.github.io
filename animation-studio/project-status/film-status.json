@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-20T00:56:42+01:00",
+  "updatedAt": "2026-11-20T01:03:00+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -382,12 +382,12 @@
     }
   ],
   "activeRender": {
-    "label": "Checking the exported film",
-    "completed": 0,
-    "total": 0,
-    "unit": "",
-    "state": "verifying",
-    "detail": "Checking the complete picture sequence, soundtrack timing and playback."
+    "label": "Clean cast pass",
+    "completed": 1281,
+    "total": 1281,
+    "unit": "pictures",
+    "state": "verified",
+    "detail": "The 28 clean cut rows passed their foreground file check. The finale shot check follows."
   },
   "milestones": [
     {
@@ -420,7 +420,7 @@
       "total": 0,
       "unit": "",
       "state": "verifying",
-      "detail": "The full film is exported. Playback and sound checks are underway."
+      "detail": "The full film is exported and the technical playback checks passed. The final watch is pending."
     }
   ],
   "lastVerifiedAt": "2026-11-19T23:27:33+01:00"
