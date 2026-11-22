@@ -1,6 +1,22 @@
 /* Shared catalogue: English first; Swedish only where available. */
 window.OFFICE_BLOG_POSTS = [
   {
+    "id": "the-fog-never-gave-him-back",
+    "title": "The Fog Never Gave Him Back: the second film from Johansson Animation Studios",
+    "excerpt": "The sequel to Jack the Ripper: a new singer tells how a girl from Limehouse finally stopped the man in the fog. An animated musical to my own song.",
+    "url": "/blog/the-fog-never-gave-him-back/",
+    "date": "2026-11-22",
+    "topic": "Film"
+  },
+  {
+    "id": "jack-the-ripper-film",
+    "title": "Jack the Ripper: the first film from Johansson Animation Studios",
+    "excerpt": "An animated musical to my own song: a cabaret singer, a man in a top hat whose face you never see, and the fog of Whitechapel in 1888.",
+    "url": "/blog/jack-the-ripper-film/",
+    "date": "2026-11-22",
+    "topic": "Film"
+  },
+  {
     "id": "scandic-laajavuori-jyvaskyla",
     "title": "Scandic Laajavuori, Jyväskylä: easy free parking and a spa with a real pool",
     "excerpt": "One night at Scandic Laajavuori in Jyväskylä. The free parking is easy, and a spa with a proper swimming pool is included in the stay.",
