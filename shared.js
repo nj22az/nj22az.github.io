@@ -185,12 +185,6 @@
     var compactOffice = family || isHome || document.body.classList.contains("world-pages");
     var journalArticle = location.pathname.startsWith("/blog/");
     if (!nav.hasAttribute("data-static-nav")) {
-      var statusUrl = "/animation-studio/project-status/";
-      var hasStatusShortcut = family && location.pathname.startsWith("/animation-studio/");
-      var statusShortcut = hasStatusShortcut
-        ? '<a href="' + statusUrl + '" aria-label="Project status"' + currentNavLocation(statusUrl) +
-          '><img src="/assets/vendor/site-icons/preview.svg" alt="" width="18" height="18"><span>Status</span></a>'
-        : "";
       var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Field Notes", "Field Notes", "article"] };
       var navLinks = CONFIG.navigation.filter(function (item) {
         return family ? compactLinks[item.id] : item.id !== "home" && !(journalArticle && item.id === "hotels");
@@ -199,8 +193,7 @@
         if (family) {
           var labels = compactLinks[item.id];
           return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' + currentNavLocation(link.href) + '<img src="/assets/vendor/site-icons/' +
-            labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>' +
-            (item.id === 'studio' ? statusShortcut : '');
+            labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>';
         }
         return '<a class="nav-link" href="' + link.href + '"' + link.attrs + (journalArticle ? currentNavLocation(link.href) : '') + '>' + item.label + '</a>';
       }).join("");
