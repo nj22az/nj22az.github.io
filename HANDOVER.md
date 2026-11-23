@@ -1,5 +1,7 @@
 # Website handover · 18 November 2026
 
+**Berry girl character, 23 November 2026:** the owner's rigged-character request is blocked on the Meshy free plan; read [characters/berry-girl/README.md](characters/berry-girl/README.md).
+
 The [Chisum boarding shortcuts handover](ferry/HANDOVER-CODEX-BOARDING-2026-11-18.md) covers direct entry to the wheelhouse and the stern ramp.
 
 The [Animation Studio section and homepage audit](docs/HANDOVER-ANIMATION-STUDIO-2026-11-18.md) cover the studio landing page, homepage navigation, project links and publication status.
