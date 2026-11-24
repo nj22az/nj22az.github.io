@@ -202,8 +202,7 @@
       nav.innerHTML =
         '<div class="nav-inner">' +
           '<a href="/" class="nav-brand logo-seal">' + brand + '</a>' +
-          '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '"' +
-            (hasStatusShortcut ? ' data-status-shortcut' : '') + '>' + navLinks + '</div>' +
+          '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '">' + navLinks + '</div>' +
           '<div class="nav-actions">' +
             '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
               (compactOffice ? '<span>More</span>' : icon("menu")) +
