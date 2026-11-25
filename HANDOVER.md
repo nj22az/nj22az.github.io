@@ -1,5 +1,7 @@
 # Website handover · 18 November 2026
 
+**Johansson World, 25 November 2026:** the online game draws every resident as the cartoon (Blender bodies only on `?pixar=1`), and the World is to take the Kikkou ink style. The work and the plan are in `nj22az/johansson-town`, branch `claude/dreamy-ritchie-cxufpl`: `briefs/HANDOFF-CARTOON-CAST-KIKKOU-2026-11-25.md`. Not published.
+
 The [Chisum boarding shortcuts handover](ferry/HANDOVER-CODEX-BOARDING-2026-11-18.md) covers direct entry to the wheelhouse and the stern ramp.
 
 The [Animation Studio section and homepage audit](docs/HANDOVER-ANIMATION-STUDIO-2026-11-18.md) cover the studio landing page, homepage navigation, project links and publication status.
