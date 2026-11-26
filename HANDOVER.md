@@ -1,5 +1,7 @@
 # Website handover · 18 November 2026
 
+**Johansson World, 26 November 2026:** Thao, and Christina, Erik and Sverker (renamed from Gran Higa, Mac and Jack) redrawn from the owner's photographs in Blender (heads, eyes, bodies, feet); the z-fighting overhaul on the ferry and in the town; real hands in progress. In `nj22az/johansson-town`, branch `claude/dreamy-ritchie-cxufpl`: `briefs/HANDOFF-SAKURA-RESTROOM-2026-11-26.md` (the day's running handover), `briefs/HANDOFF-ZFIGHT-FERRY-2026-11-26.md`, `briefs/HANDOFF-ZFIGHT-TOWN-2026-11-26.md`. Not published to `main` since `28c9449`.
+
 **Johansson World, 25 November 2026:** the online game draws every resident as the cartoon (Blender bodies only on `?pixar=1`), and the World is to take the Kikkou ink style. The work and the plan are in `nj22az/johansson-town`, branch `claude/dreamy-ritchie-cxufpl`: `briefs/HANDOFF-CARTOON-CAST-KIKKOU-2026-11-25.md`. Not published.
 
 The [Chisum boarding shortcuts handover](ferry/HANDOVER-CODEX-BOARDING-2026-11-18.md) covers direct entry to the wheelhouse and the stern ramp.
