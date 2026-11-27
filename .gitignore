@@ -27,3 +27,5 @@ node_modules
 # Johansson Town lives in its own repository, nj22az/johansson-town, since 7 November 2026. For local work on the
 # Studio or the Camera, clone it here as johansson-town/; it is never committed to this repository.
 /johansson-town/
+# (a symlink to a clone beside this one is not a directory to git: the bare name keeps it out too)
+/johansson-town
