@@ -4,7 +4,7 @@ Guidance for Claude Code when working in this repository.
 
 **Every task: read [HANDOVER.md](HANDOVER.md) and the latest applicable linked handover before starting; update the handover before finishing or transferring the work.** Follow the full [handover rules in AGENTS.md](AGENTS.md#handover-required-at-the-start-and-end-of-every-task), including partial and blocked work.
 
-For animation, character performances, films and their rendering tools, also read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md), adapted from the owner's *Opus 5.5 promt.pdf*. The same guidance applies to Codex through [AGENTS.md](AGENTS.md). Preserve the current engine, cast and interactive performance budgets; apply the reference's expensive render settings to suitable offline deliveries.
+For animation, character performances, films and their rendering tools, also read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md), adapted from the owner's *Opus 5.5 promt.pdf*. The same guidance applies to Codex through [AGENTS.md](AGENTS.md). Preserve the current engine, cast and interactive performance budgets; apply the reference's expensive render settings to suitable offline deliveries. **Johansson World moves with strict adherence to [dylantarre/animation-principles](https://github.com/dylantarre/animation-principles)** (the owner, 27 November 2026), as applied in the town's `docs/ANIMATION-STANDARD.md`: read it before any motion work there.
 
 ## Commands
 

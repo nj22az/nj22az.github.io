@@ -1,5 +1,7 @@
 # Animation and film direction for Claude and Codex
 
+**Johansson World, the owner, 27 November 2026:** "https://github.com/dylantarre/animation-principles use this as the guidelines for animating Johansson world make strict adherence to it". Everything that moves in the World follows that guideline strictly, as applied in the town's [docs/ANIMATION-STANDARD.md](https://github.com/nj22az/johansson-town/blob/main/docs/ANIMATION-STANDARD.md) (the guideline itself is kept at the owner's commit in the town's `docs/animation-principles/`). The film direction below stands with it: where both speak to a move, keep both.
+
 Owner-provided reference: **Opus 5.5 promt.pdf**, the five-page *Tap. Tock. Stop.* / *Chain Reaction* prompt pack, supplied 20 October 2026. These are adapted working instructions, not a claim that this repository has already achieved the reference's render or sound measurements. Apply them when building character performances, animated scenes, films and their rendering tools. They do not mandate an expensive film-rendering path for the interactive game or editor.
 
 ## Start with a concrete film brief

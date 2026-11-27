@@ -151,7 +151,7 @@ says which chapter answers which question, and lists the real arrangement drawin
 
 ## Animation, character performances and films
 
-Read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md) when working on animated performances, scene/film direction or rendering. It adapts the owner's supplied *Opus 5.5 promt.pdf* for both Claude and Codex: timed briefs, a reproducible timeline, readable acting/cameras, contact checks, measured picture/sound review and honest reporting. Its offline film settings do not replace the interactive game's device budgets or existing character system.
+Read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md) when working on animated performances, scene/film direction or rendering. It adapts the owner's supplied *Opus 5.5 promt.pdf* for both Claude and Codex: timed briefs, a reproducible timeline, readable acting/cameras, contact checks, measured picture/sound review and honest reporting. Its offline film settings do not replace the interactive game's device budgets or existing character system. Johansson World's motion also follows [dylantarre/animation-principles](https://github.com/dylantarre/animation-principles) strictly (the owner, 27 November 2026), as applied in the town's `docs/ANIMATION-STANDARD.md`.
 
 ## Repository split: on hold
 
